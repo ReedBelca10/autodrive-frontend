@@ -1,0 +1,10 @@
+{
+  "path": "app/components",
+  "components": [
+    "button",
+    "input",
+    "card",
+    "dialog",
+    "popover"
+  ]
+}
