@@ -3,8 +3,13 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Instagram, Youtube, MapPin, Phone, Mail } from 'lucide-react';
+import { usePathname } from 'next/navigation';
 
 export default function Footer() {
+  const pathname = usePathname();
+
+  // Hide the footer on the login and register pages
+  if (pathname && (pathname.startsWith('/login') || pathname.startsWith('/register'))) return null;
   const agencies = [
     'AutoDrive KPALIMÉ',
     'AutoDrive ATAKPAMÉ',
