@@ -11,11 +11,21 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<{ fullName?: string; email?: string } | null>(null);
+  const [user, setUser] = useState<{ fullName?: string; email?: string; avatarUrl?: string } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
+
+  const displayName = user?.fullName || (user?.email ? user.email.split('@')[0] : null) || 'Utilisateur';
+  const initials = (() => {
+    if (!user) return 'AD';
+    if (user.fullName) {
+      return user.fullName.split(' ').map(n => n[0]).filter(Boolean).slice(0,2).join('').toUpperCase();
+    }
+    if (user.email) return user.email.split('@')[0].slice(0,2).toUpperCase();
+    return 'AD';
+  })();
 
   useEffect(() => {
     // try to fetch profile silently to display user in navbar
@@ -26,7 +36,9 @@ export default function Navbar() {
         if (!mounted) return;
         if (res.ok) {
           const data = await res.json();
-          setUser(data as any);
+          // backend returns { user: {...} } — accept either shape
+          const profile = (data && (data.user || data)) as any;
+          setUser(profile);
         } else {
           setUser(null);
         }
@@ -109,36 +121,32 @@ export default function Navbar() {
                       // eslint-disable-next-line @next/next/no-img-element
                       <img src={(user as any).avatarUrl} alt="avatar" className="w-9 h-9 object-cover" />
                     ) : (
-                      <span className="text-sm font-medium text-slate-700">
-                        {user && user.fullName ? user.fullName.split(' ').map(n => n[0]).slice(0,2).join('') : 'AD'}
-                      </span>
+                      <span className="text-sm font-medium text-slate-700">{initials}</span>
                     )}
                   </div>
-                  <span className="hidden sm:inline-block text-sm font-medium text-gray-700">{user.fullName || 'Utilisateur'}</span>
+                  <span className="hidden sm:inline-block text-sm font-medium text-gray-700">{displayName}</span>
                 </button>
 
-                {menuOpen && (
-                  <div className="absolute right-0 mt-2 w-44 bg-white border rounded-md shadow-lg py-1 z-50">
-                    <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setMenuOpen(false)}>
-                      Profil
-                    </Link>
-                    <button
-                      className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={async () => {
-                        try {
-                          await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' });
-                        } catch (e) {
-                          // ignore
-                        }
-                        setUser(null);
-                        setMenuOpen(false);
-                        router.push('/login');
-                      }}
-                    >
-                      Se déconnecter
-                    </button>
-                  </div>
-                )}
+                <div className={`absolute right-0 mt-2 w-44 bg-white border rounded-md shadow-lg py-1 z-50 transform origin-top-right transition-all duration-150 ease-out ${menuOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-1 pointer-events-none'}`}>
+                  <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setMenuOpen(false)}>
+                    Profil
+                  </Link>
+                  <button
+                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={async () => {
+                      try {
+                        await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' });
+                      } catch (e) {
+                        // ignore
+                      }
+                      setUser(null);
+                      setMenuOpen(false);
+                      router.push('/login');
+                    }}
+                  >
+                    Se déconnecter
+                  </button>
+                </div>
               </div>
             ) : (
               <Link href="/login">
