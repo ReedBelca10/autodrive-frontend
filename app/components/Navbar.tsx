@@ -16,6 +16,23 @@ export default function Navbar() {
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
+
+  // Handle logo click based on user role
+  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    if (user) {
+      const userRole = (user as any).role;
+      if (userRole === 'admin') {
+        router.push('/admin');
+      } else if (userRole === 'manager') {
+        router.push('/manager');
+      } else {
+        router.push('/');
+      }
+    } else {
+      router.push('/');
+    }
+  };
   const displayName = user?.fullName || (user?.email ? user.email.split('@')[0] : null) || 'Utilisateur';
   const initials = (() => {
     if (!user) return 'AD';
@@ -81,7 +98,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-1 md:py-2 lg:py-3">
           {/* Logo */}
-          <Link href="/" className="relative z-50 flex items-center gap-3 flex-shrink-0 bg-transparent">
+          <Link href="/" onClick={handleLogoClick} className="relative z-50 flex items-center gap-3 flex-shrink-0 bg-transparent">
             <Image
               src="/assets/logoSansBack.png"
               alt="AutoDrive Logo"

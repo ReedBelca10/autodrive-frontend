@@ -24,13 +24,10 @@ export default function NewVehiclePage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const router = useRouter();
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
   useEffect(() => {
-    const token = localStorage.getItem('adminToken');
-    if (!token) {
-      router.push('/admin/login');
-    }
+    // Middleware will handle the authorization check
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -39,13 +36,12 @@ export default function NewVehiclePage() {
     setLoading(true);
 
     try {
-      const token = localStorage.getItem('adminToken');
       const response = await fetch(`${API_BASE}/vehicles`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
         },
+        credentials: 'include',
         body: JSON.stringify(form),
       });
 

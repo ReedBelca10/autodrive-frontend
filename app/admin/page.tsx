@@ -18,31 +18,37 @@ interface User {
   createdAt: string;
 }
 
+interface Agency {
+  _id: string;
+  name: string;
+  address: string;
+  city: string;
+  zipCode: string;
+  phone?: string;
+  email?: string;
+  createdAt: string;
+}
+
 export default function AdminDashboard() {
   const router = useRouter();
   const [stats, setStats] = useState<Stats | null>(null);
   const [users, setUsers] = useState<User[]>([]);
+  const [agencies, setAgencies] = useState<Agency[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
     const fetchDashboard = async () => {
       try {
-        // Récupère le token du localStorage
-        const token = localStorage.getItem('adminToken');
-        if (!token) {
-          router.push('/admin/login');
-          return;
-        }
+        const base = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
         // Récupère les statistiques du dashboard
-        const statsRes = await fetch('http://localhost:3001/admin/dashboard/stats', {
-          headers: { Authorization: `Bearer ${token}` },
+        const statsRes = await fetch(`${base}/admin/dashboard/stats`, {
+          credentials: 'include',
         });
 
         if (statsRes.status === 403) {
-          localStorage.removeItem('adminToken');
-          router.push('/admin/login');
+          router.push('/login');
           return;
         }
 
@@ -54,8 +60,8 @@ export default function AdminDashboard() {
         setStats(statsData);
 
         // Récupère la liste des utilisateurs
-        const usersRes = await fetch('http://localhost:3001/admin/dashboard/users', {
-          headers: { Authorization: `Bearer ${token}` },
+        const usersRes = await fetch(`${base}/admin/dashboard/users`, {
+          credentials: 'include',
         });
 
         if (!usersRes.ok) {
@@ -64,10 +70,20 @@ export default function AdminDashboard() {
 
         const usersData = await usersRes.json();
         setUsers(Array.isArray(usersData) ? usersData : []);
+
+        // Récupère la liste des agences
+        const agenciesRes = await fetch(`${base}/agencies`, {
+          credentials: 'include',
+        });
+
+        if (agenciesRes.ok) {
+          const agenciesData = await agenciesRes.json();
+          setAgencies(Array.isArray(agenciesData) ? agenciesData : []);
+        }
       } catch (err) {
         console.error(err);
         setError(err instanceof Error ? err.message : 'Une erreur est survenue');
-        setTimeout(() => router.push('/admin/login'), 2000);
+        setTimeout(() => router.push('/login'), 2000);
       } finally {
         setLoading(false);
       }
@@ -77,9 +93,18 @@ export default function AdminDashboard() {
   }, [router]);
 
   // Gestion de la déconnexion
-  const handleLogout = () => {
-    localStorage.removeItem('adminToken');
-    router.push('/admin/login');
+  const handleLogout = async () => {
+    const base = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
+    try {
+      await fetch(`${base}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      router.push('/login');
+    }
   };
 
   if (loading) {
@@ -137,7 +162,7 @@ export default function AdminDashboard() {
         )}
 
         {/* Tableau des clients */}
-        <div className="bg-white p-6 rounded shadow-sm">
+        <div className="bg-white p-6 rounded shadow-sm mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">Derniers Clients</h2>
           {users.length > 0 ? (
             <div className="overflow-x-auto">
@@ -170,6 +195,41 @@ export default function AdminDashboard() {
             </div>
           ) : (
             <p className="text-gray-600 text-center py-8">Aucun client trouvé</p>
+          )}
+        </div>
+
+        {/* Tableau des agences */}
+        <div className="bg-white p-6 rounded shadow-sm">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Agences Disponibles</h2>
+          {agencies.length > 0 ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-50 border-b">
+                  <tr>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Nom</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Adresse</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Ville</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Code Postal</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Téléphone</th>
+                    <th className="text-left px-4 py-3 font-semibold text-gray-700">Email</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {agencies.map((agency) => (
+                    <tr key={agency._id} className="border-b hover:bg-gray-50 transition">
+                      <td className="px-4 py-3 text-gray-900 font-medium">{agency.name}</td>
+                      <td className="px-4 py-3 text-gray-900">{agency.address}</td>
+                      <td className="px-4 py-3 text-gray-900">{agency.city}</td>
+                      <td className="px-4 py-3 text-gray-900">{agency.zipCode}</td>
+                      <td className="px-4 py-3 text-gray-600">{agency.phone || 'N/A'}</td>
+                      <td className="px-4 py-3 text-gray-600">{agency.email || 'N/A'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          ) : (
+            <p className="text-gray-600 text-center py-8">Aucune agence trouvée</p>
           )}
         </div>
       </div>

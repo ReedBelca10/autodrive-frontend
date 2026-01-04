@@ -19,24 +19,16 @@ export default function MessagesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const router = useRouter();
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
   useEffect(() => {
-    const token = localStorage.getItem('adminToken');
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
     fetchMessages();
   }, []);
 
   const fetchMessages = async () => {
     try {
-      const token = localStorage.getItem('adminToken');
       const response = await fetch(`${API_BASE}/contact`, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
       if (response.ok) {
         const data = await response.json();
@@ -51,12 +43,9 @@ export default function MessagesPage() {
 
   const markAsRead = async (id: string) => {
     try {
-      const token = localStorage.getItem('adminToken');
       const response = await fetch(`${API_BASE}/contact/${id}/read`, {
         method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
 
       if (response.ok) {
@@ -71,12 +60,9 @@ export default function MessagesPage() {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) return;
 
     try {
-      const token = localStorage.getItem('adminToken');
       const response = await fetch(`${API_BASE}/contact/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
 
       if (response.ok) {

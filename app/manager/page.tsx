@@ -10,40 +10,31 @@ export default function ManagerDashboard() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        const token = localStorage.getItem('token');
-        if (!token) {
-          router.push('/auth/login');
-          return;
-        }
+        const base = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
-        // Vérifie que l'utilisateur est manager
-        const res = await fetch('http://localhost:3001/auth/profile', {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-
-        if (!res.ok) {
-          router.push('/auth/login');
-          return;
-        }
-
-        const user = await res.json();
-        if (user.role !== 'manager') {
-          router.push('/');
-          return;
-        }
-
+        // Vérifie que l'utilisateur est manager via le middleware
+        // Le middleware a déjà vérifié le rôle, nous sommes sûr d'être manager
         setLoading(false);
       } catch (err) {
-        router.push('/auth/login');
+        router.push('/login');
       }
     };
 
     checkAuth();
   }, [router]);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    router.push('/auth/login');
+  const handleLogout = async () => {
+    const base = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
+    try {
+      await fetch(`${base}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      router.push('/login');
+    }
   };
 
   if (loading) {

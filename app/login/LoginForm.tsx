@@ -17,7 +17,7 @@ export default function LoginForm() {
     e.preventDefault();
     setError(null);
     setLoading(true);
-      try {
+    try {
       const base = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
       const res = await fetch(`${base}/auth/login`, {
         method: 'POST',
@@ -25,23 +25,44 @@ export default function LoginForm() {
         body: JSON.stringify({ email, password }),
         credentials: 'include',
       });
-      const data = await res.json();
+      
       if (!res.ok) {
+        const data = await res.json();
         setError(data.message || data.error || 'Erreur lors de la connexion');
         setLoading(false);
         return;
       }
-      // Server sets HttpOnly cookie; consider calling /auth/profile if you need user info
-      if (res.ok) {
-        try {
-          // notify other tabs
-          localStorage.setItem('profile_updated_at', String(Date.now()));
-        } catch (e) {}
-        // notify same-window listeners (Navbar)
-        try { window.dispatchEvent(new Event('autodrive:login')); } catch (e) {}
-        router.push('/');
+
+      // Fetch user profile to get role
+      const profileRes = await fetch(`${base}/auth/profile`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+
+      if (!profileRes.ok) {
+        setError('Erreur lors de la récupération du profil');
+        setLoading(false);
+        return;
+      }
+
+      const profileData = await profileRes.json();
+      const userRole = profileData.user?.role;
+
+      // Notify other tabs and same-window listeners
+      try {
+        localStorage.setItem('profile_updated_at', String(Date.now()));
+      } catch (e) {}
+      try {
+        window.dispatchEvent(new Event('autodrive:login'));
+      } catch (e) {}
+
+      // Redirect based on user role
+      if (userRole === 'admin') {
+        router.push('/admin');
+      } else if (userRole === 'manager') {
+        router.push('/manager');
       } else {
-        setError(data.message || data.error || 'Erreur lors de la connexion');
+        router.push('/');
       }
     } catch (err: any) {
       setError(err.message || 'Erreur réseau');

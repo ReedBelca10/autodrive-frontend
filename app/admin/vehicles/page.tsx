@@ -21,20 +21,17 @@ export default function VehiclesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const router = useRouter();
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
   useEffect(() => {
-    const token = localStorage.getItem('adminToken');
-    if (!token) {
-      router.push('/admin/login');
-      return;
-    }
     fetchVehicles();
   }, []);
 
   const fetchVehicles = async () => {
     try {
-      const response = await fetch(`${API_BASE}/vehicles`);
+      const response = await fetch(`${API_BASE}/vehicles`, {
+        credentials: 'include',
+      });
       if (response.ok) {
         const data = await response.json();
         setVehicles(data);
@@ -50,12 +47,9 @@ export default function VehiclesPage() {
     if (!confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) return;
 
     try {
-      const token = localStorage.getItem('adminToken');
       const response = await fetch(`${API_BASE}/vehicles/${id}`, {
         method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
+        credentials: 'include',
       });
 
       if (response.ok) {

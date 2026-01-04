@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LayoutDashboard, Car, Users, MessageSquare, Bookmark, LogOut, Menu, X } from 'lucide-react';
+import { LayoutDashboard, Car, Users, MessageSquare, Bookmark, LogOut, Menu, X, MapPin } from 'lucide-react';
 
 export default function AdminLayout({
   children,
@@ -13,16 +13,25 @@ export default function AdminLayout({
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
 
-  const handleLogout = () => {
-    // Supprimer le token du localStorage
-    localStorage.removeItem('adminToken');
-    router.push('/admin/login');
+  const handleLogout = async () => {
+    const base = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
+    try {
+      await fetch(`${base}/auth/logout`, {
+        method: 'POST',
+        credentials: 'include',
+      });
+    } catch (err) {
+      console.error('Logout error:', err);
+    } finally {
+      router.push('/login');
+    }
   };
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Dashboard', href: '/admin' },
     { icon: Car, label: 'Véhicules', href: '/admin/vehicles' },
     { icon: Users, label: 'Utilisateurs', href: '/admin/users' },
+    { icon: MapPin, label: 'Nos agences', href: '/admin/agencies' },
     { icon: Bookmark, label: 'Réservations', href: '/admin/reservations' },
     { icon: MessageSquare, label: 'Messages', href: '/admin/messages' },
   ];
