@@ -47,6 +47,11 @@ export default function RegisterForm() {
     }
   }
 
+  function socialSignIn(provider: string) {
+    const base = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
+    window.location.href = `${base}/auth/oauth/${provider}`;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#123744] to-[#0b3a47] flex items-center justify-center p-8">
       <div className="max-w-7xl w-full rounded-2xl relative">
@@ -167,7 +172,7 @@ export default function RegisterForm() {
                 <div className="mt-4 text-sm text-blue-400">ou continuer avec</div>
 
                 <div className="mt-4 flex items-center gap-4">
-                  <button aria-label="Google" className="px-6 h-10 min-w-[96px] rounded-full border-2 border-[#cfeaf7] bg-white flex items-center justify-center">
+                  <button aria-label="Google" onClick={() => socialSignIn('google')} className="px-6 h-10 min-w-[96px] rounded-full border-2 border-[#cfeaf7] bg-white flex items-center justify-center">
                     <svg width="20" height="20" viewBox="0 0 533.5 544.3" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <path d="M533.5 278.4c0-18.2-1.6-36-4.6-53.2H272v100.8h147.5c-6.3 33.8-25.6 62.5-54.9 81.5v67.8h88.7c52-48 81.2-118.6 81.2-197z" fill="#4285F4"/>
                       <path d="M272 544.3c73.6 0 135.4-24.4 180.5-66.5l-88.7-67.8c-24.7 16.6-56.2 26.5-91.8 26.5-70.6 0-130.4-47.6-151.9-111.5H27.5v69.9C72.6 486.6 167.8 544.3 272 544.3z" fill="#34A853"/>
@@ -175,7 +180,7 @@ export default function RegisterForm() {
                       <path d="M272 109.7c38.9 0 74 13.4 101.6 39.6l76.1-76.1C409.3 24 345.5 0 272 0 167.8 0 72.6 57.7 27.5 145.9l92.6 69.9C141.6 157.3 201.4 109.7 272 109.7z" fill="#EA4335"/>
                     </svg>
                   </button>
-                  <button aria-label="Twitter (X)" className="px-6 h-10 min-w-[96px] rounded-full border-2 border-[#cfeaf7] bg-white flex items-center justify-center">
+                  <button aria-label="Twitter (X)" onClick={() => socialSignIn('twitter')} className="px-6 h-10 min-w-[96px] rounded-full border-2 border-[#cfeaf7] bg-white flex items-center justify-center">
                     <span className="w-9 h-9 bg-white rounded-lg flex items-center justify-center shadow-sm border border-[#e6f7fb] overflow-hidden">
                       <svg width="18" height="18" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" className="block">
                         <rect x="0" y="0" width="24" height="24" rx="6" fill="#1DA1F2" />
@@ -183,7 +188,7 @@ export default function RegisterForm() {
                       </svg>
                     </span>
                   </button>
-                  <button aria-label="Facebook" className="px-6 h-10 min-w-[96px] rounded-full border-2 border-[#cfeaf7] bg-white flex items-center justify-center">
+                  <button aria-label="Facebook" onClick={() => socialSignIn('facebook')} className="px-6 h-10 min-w-[96px] rounded-full border-2 border-[#cfeaf7] bg-white flex items-center justify-center">
                     <svg width="20" height="20" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                       <circle cx="12" cy="12" r="11" fill="#1877F2" />
                       <path d="M15.5 8h-1.3c-.6 0-.9.3-.9.9V10h2.2l-.3 2H13.3v6h-2v-6H9.7v-2h1.6v-1.3C11.3 7 12.4 6 13.9 6c.7 0 1.2 0 1.6.1V8z" fill="#fff" />

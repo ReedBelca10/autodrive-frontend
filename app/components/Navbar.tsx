@@ -16,7 +16,6 @@ export default function Navbar() {
   const menuRef = useRef<HTMLDivElement | null>(null);
 
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
-
   const displayName = user?.fullName || (user?.email ? user.email.split('@')[0] : null) || 'Utilisateur';
   const initials = (() => {
     if (!user) return 'AD';
@@ -29,11 +28,12 @@ export default function Navbar() {
 
   useEffect(() => {
     // try to fetch profile silently to display user in navbar
-    let mounted = true;
-    async function load() {
+    const mountedRef = { current: true } as { current: boolean };
+
+    async function loadProfile() {
       try {
         const res = await fetch(`${API_BASE}/auth/profile`, { credentials: 'include' });
-        if (!mounted) return;
+        if (!mountedRef.current) return;
         if (res.ok) {
           const data = await res.json();
           // backend returns { user: {...} } — accept either shape
@@ -43,24 +43,33 @@ export default function Navbar() {
           setUser(null);
         }
       } catch (e) {
-        setUser(null);
+        if (mountedRef.current) setUser(null);
       }
     }
-    load();
+
+    loadProfile();
+
     function onStorage(e: StorageEvent) {
-      if (e.key === 'profile_updated_at') {
-        load();
-      }
+      if (e.key === 'profile_updated_at') loadProfile();
     }
-    window.addEventListener('storage', onStorage);
+
+    function onLoginEvent() {
+      loadProfile();
+    }
+
     function onDoc(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) setMenuOpen(false);
     }
+
+    window.addEventListener('storage', onStorage);
+    window.addEventListener('autodrive:login', onLoginEvent as EventListener);
     document.addEventListener('click', onDoc);
+
     return () => {
-      mounted = false;
+      mountedRef.current = false;
       document.removeEventListener('click', onDoc);
       window.removeEventListener('storage', onStorage);
+      window.removeEventListener('autodrive:login', onLoginEvent as EventListener);
     };
   }, [API_BASE]);
 

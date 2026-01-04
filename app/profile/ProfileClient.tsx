@@ -1,10 +1,9 @@
 "use client"
 
-import React, { useEffect, useState } from 'react'
-import { useRef } from 'react'
-import Image from 'next/image'
+import React, { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { AvatarUpload } from '@/app/components/AvatarUpload'
 import {
   Card,
   CardHeader,
@@ -19,6 +18,8 @@ type UserProfile = {
   fullName?: string
   email?: string
   role?: string
+  avatarUrl?: string
+  avatarPath?: string
 }
 
 export default function ProfileClient() {
@@ -26,37 +27,35 @@ export default function ProfileClient() {
   const [user, setUser] = useState<UserProfile | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [avatarFile, setAvatarFile] = useState<File | null>(null)
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
-  const [uploading, setUploading] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000'
 
-  async function fetchProfile() {
+  const fetchProfile = useCallback(async () => {
     setLoading(true)
     setError(null)
     try {
       const res = await fetch(`${API_BASE}/auth/profile`, {
         credentials: 'include',
+        cache: 'no-store',
       })
       if (!res.ok) {
         if (res.status === 401 || res.status === 403) return router.push('/login')
         throw new Error(`Erreur ${res.status}`)
       }
       const data = await res.json()
-      setUser(data)
+      // backend returns { user } shape; handle both possibilities
+      const userData = (data && (data as any).user) ? (data as any).user : data
+      setUser(userData)
     } catch (err: any) {
       setError(err.message || 'Erreur de chargement')
     } finally {
       setLoading(false)
     }
-  }
+  }, [API_BASE, router])
 
   useEffect(() => {
     fetchProfile()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [fetchProfile])
 
   async function handleLogout() {
     try {
@@ -99,81 +98,28 @@ export default function ProfileClient() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="md:col-span-1">
             <Card className="p-6 text-center">
-                <div className="mx-auto w-28 h-28 rounded-full bg-gradient-to-tr from-indigo-500 to-emerald-400 flex items-center justify-center text-white text-3xl font-bold overflow-hidden">
-                  {avatarPreview ? (
-                    // preview selected file
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={avatarPreview} alt="preview" className="w-28 h-28 object-cover" />
-                  ) : user && (user as any).avatarUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={(user as any).avatarUrl} alt="avatar" className="w-28 h-28 object-cover" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-white text-3xl font-bold">
-                      {user?.fullName ? user.fullName.split(' ').map(n => n[0]).slice(0,2).join('') : 'AD'}
-                    </div>
-                  )}
-                </div>
-                <div className="relative mt-4 flex flex-col items-center gap-2">
-                  <label className="text-sm text-muted-foreground">Modifier la photo</label>
-                  {/* hidden file input triggered by overlay icon */}
-                  <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={async (e) => {
-                    const f = e.target.files?.[0] ?? null
-                    if (!f) return
-                    // preview
-                    const url = URL.createObjectURL(f)
-                    setAvatarPreview(url)
-                    setUploading(true)
-                    try {
-                      const fd = new FormData()
-                      fd.append('file', f)
-                      const res = await fetch(`${API_BASE}/users/avatar`, {
-                        method: 'POST',
-                        body: fd,
-                        credentials: 'include',
-                      })
-                      if (!res.ok) throw new Error('Upload failed')
-                      const data = await res.json()
-                      setUser((u) => ({ ...(u as any), avatarUrl: data.avatarUrl }))
-                      try { localStorage.setItem('profile_updated_at', Date.now().toString()) } catch (e) {}
-                    } catch (err: any) {
-                      setError(err.message || 'Échec de l\'upload')
-                    } finally {
-                      setUploading(false)
-                      // revoke preview URL after a short delay so UI updates
-                      setTimeout(() => {
-                        if (url) URL.revokeObjectURL(url)
-                        setAvatarPreview(null)
-                      }, 500)
-                    }
-                  }} />
+              {/* Avatar upload section */}
+              <AvatarUpload
+                key={user?.avatarUrl}
+                avatarUrl={user?.avatarUrl}
+                fullName={user?.fullName}
+                onAvatarChange={(avatarUrl) => {
+                  setUser((u) => (u ? { ...u, avatarUrl } : null))
+                  // Force refetch après 500ms pour s'assurer que le serveur a tout enregistré
+                  setTimeout(() => {
+                    fetchProfile()
+                  }, 500)
+                }}
+                apiBase={API_BASE}
+              />
 
-                  {/* overlay upload icon */}
-                  <button onClick={() => fileInputRef.current?.click()} title="Modifier la photo" className="absolute bottom-0 right-0 -mb-1 -mr-1 w-9 h-9 rounded-full bg-white border flex items-center justify-center text-blue-600 shadow">
-                    {uploading ? (
-                      <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 010 16v-4l-3 3 3 3v-4a8 8 0 01-8-8z"></path>
-                      </svg>
-                    ) : (
-                      <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 15a4 4 0 004 4h10a4 4 0 004-4v-6a4 4 0 00-4-4h-3l-2-2H10L8 5H5a4 4 0 00-2 8z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l-3 3m0 0l-3-3m3 3V3" />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-                {avatarPreview && (
-                  <div>
-                    {/* release object URL when component unmounts or preview cleared */}
-                  </div>
-                )}
               <div className="mt-4">
                 <h2 className="text-xl font-semibold">{user?.fullName || 'Utilisateur'}</h2>
                 <p className="text-sm text-muted-foreground">{user?.role || 'Membre'}</p>
               </div>
               <div className="mt-6 text-left">
                 <p className="text-xs text-muted-foreground">Adresse e-mail</p>
-                <p className="font-medium">{user?.email || '—'}</p>
+                <p className="font-medium text-sm break-all">{user?.email || '—'}</p>
               </div>
             </Card>
           </div>

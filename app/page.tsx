@@ -130,7 +130,24 @@ export default function Home() {
                 <br />
                 véhicules préférés
                 <br />
-                <span>simple et <u className="text-blue-600 decoration-blue-600 decoration-4 underline-offset-4">Abordable</u></span>
+                simple et{' '}
+                <span className="relative inline-block text-blue-600">
+                  Abordable
+                  <svg
+                    className="absolute left-0"
+                    style={{ bottom: '-10px', width: '100%', height: '20px', minWidth: '230px' }}
+                    viewBox="0 0 230 20"
+                    preserveAspectRatio="none"
+                  >
+                    <path
+                      d="M 0 15 Q 57.5 5, 115 10 T 230 15"
+                      stroke="#2563eb"
+                      strokeWidth="3"
+                      fill="none"
+                      strokeLinecap="round"
+                    />
+                  </svg>
+                </span>
               </h1>
               <p className="text-gray-700 text-lg mb-8">
                 Avec plus de 20 ans d&apos;expérience, AutoDrive est un des principaux loueur de voitures au Togo
