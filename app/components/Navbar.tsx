@@ -119,6 +119,9 @@ export default function Navbar() {
             <Link href="/promotions" className="text-gray-700 hover:text-blue-600 font-medium">
               PROMOTIONS
             </Link>
+            <Link href="/blog" className="text-gray-700 hover:text-blue-600 font-medium">
+              BLOG
+            </Link>
             <Link href="/about" className="text-gray-700 hover:text-blue-600 font-medium">
               À PROPOS
             </Link>
@@ -129,7 +132,7 @@ export default function Navbar() {
 
           {/* Buttons */}
           <div className="hidden md:flex items-center gap-3">
-            <Link href="/reservation">
+            <Link href="/vehicles/search">
               <Button className="bg-blue-600 hover:bg-blue-700 text-white">
                 RÉSERVER
               </Button>
@@ -156,6 +159,9 @@ export default function Navbar() {
                 <div className={`absolute right-0 mt-2 w-44 bg-white border rounded-md shadow-lg py-1 z-50 transform origin-top-right transition-all duration-150 ease-out ${menuOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-1 pointer-events-none'}`}>
                   <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setMenuOpen(false)}>
                     Profil
+                  </Link>
+                  <Link href="/favorites" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setMenuOpen(false)}>
+                    Mes favoris
                   </Link>
                   <button
                     className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
@@ -211,11 +217,25 @@ export default function Navbar() {
               VÉHICULES
             </Link>
             <Link
+              href="/favorites"
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
+              onClick={() => setIsOpen(false)}
+            >
+              MES FAVORIS
+            </Link>
+            <Link
               href="/promotions"
               className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
               onClick={() => setIsOpen(false)}
             >
               PROMOTIONS
+            </Link>
+            <Link
+              href="/blog"
+              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
+              onClick={() => setIsOpen(false)}
+            >
+              BLOG
             </Link>
             <Link
               href="/about"
@@ -232,7 +252,7 @@ export default function Navbar() {
               CONTACT
             </Link>
             <Link
-              href="/reservation"
+              href="/vehicles/search"
               onClick={() => setIsOpen(false)}
             >
               <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
@@ -243,6 +263,9 @@ export default function Navbar() {
               <div className="px-4">
                 <Link href="/profile" onClick={() => setIsOpen(false)} className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded">
                   Profil
+                </Link>
+                <Link href="/favorites" onClick={() => setIsOpen(false)} className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded">
+                  Mes favoris
                 </Link>
                 <button
                   className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"

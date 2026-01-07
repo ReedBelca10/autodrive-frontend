@@ -4,28 +4,61 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Facebook, Instagram, Youtube, MapPin, Phone, Mail } from 'lucide-react';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
+
+interface Agency {
+  _id: string;
+  name: string;
+  city: string;
+  latitude?: number;
+  longitude?: number;
+}
 
 export default function Footer() {
   const pathname = usePathname();
+  const [agencies, setAgencies] = useState<Agency[]>([]);
+  const [loading, setLoading] = useState(true);
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
+
+  useEffect(() => {
+    const fetchAgencies = async () => {
+      try {
+        const response = await fetch(`${API_BASE}/agencies`);
+        if (response.ok) {
+          const data = await response.json();
+          setAgencies(Array.isArray(data) ? data : []);
+        }
+      } catch (err) {
+        console.error('Erreur lors du chargement des agences:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAgencies();
+  }, [API_BASE]);
 
   // Hide the footer on the login and register pages
   if (pathname && (pathname.startsWith('/login') || pathname.startsWith('/register'))) return null;
-  const agencies = [
-    'AutoDrive KPALIMÉ',
-    'AutoDrive ATAKPAMÉ',
-    'AutoDrive SOKODÉ',
-    'AutoDrive BITITA',
-    'AutoDrive KARA',
-    'AutoDrive DAPAONG',
-    'AutoDrive SINKASSÉ',
-    'AutoDrive TOKOIN',
-    'AutoDrive ADIDOGOME',
-    'AutoDrive AKODESSEWA',
-    'AutoDrive ANEHO',
-    'AutoDrive VOGAN',
-    'AutoDrive NOTSÉ',
-    'AutoDrive TSÉVIÉ',
+
+  // Fallback agencies if API fails
+  const fallbackAgencies = [
+    { _id: '1', name: 'AutoDrive KPALIMÉ', city: 'Kpalimé' },
+    { _id: '2', name: 'AutoDrive ATAKPAMÉ', city: 'Atakpamé' },
+    { _id: '3', name: 'AutoDrive SOKODÉ', city: 'Sokodé' },
+    { _id: '4', name: 'AutoDrive BITITA', city: 'Bitita' },
+    { _id: '5', name: 'AutoDrive KARA', city: 'Kara' },
+    { _id: '6', name: 'AutoDrive DAPAONG', city: 'Dapaong' },
+    { _id: '7', name: 'AutoDrive SINKASSÉ', city: 'Sinkassé' },
   ];
+
+  const displayedAgencies = agencies.length > 0 ? agencies : fallbackAgencies;
+
+  const handleAgencyClick = (agency: Agency) => {
+    if (agency.latitude && agency.longitude) {
+      const mapsUrl = `https://www.google.com/maps/search/${agency.latitude},${agency.longitude}`;
+      window.open(mapsUrl, '_blank');
+    }
+  };
 
   return (
     <footer className="bg-gray-900 text-gray-100">
@@ -62,8 +95,16 @@ export default function Footer() {
           <div>
             <h3 className="font-bold text-white mb-4">Nos agences</h3>
             <ul className="text-gray-400 text-sm space-y-1">
-              {agencies.slice(0, 7).map((agency, idx) => (
-                <li key={idx}>{agency}</li>
+              {displayedAgencies.slice(0, 7).map((agency) => (
+                <li key={agency._id}>
+                  <button
+                    onClick={() => handleAgencyClick(agency)}
+                    className="flex items-start gap-1 hover:text-emerald-300 transition cursor-pointer text-left"
+                  >
+                    <MapPin size={14} className="mt-0.5 flex-shrink-0 text-emerald-400" />
+                    <span>{agency.name}</span>
+                  </button>
+                </li>
               ))}
             </ul>
           </div>

@@ -23,6 +23,10 @@ export default function RegisterForm() {
       setError('Les mots de passe ne correspondent pas');
       return;
     }
+    if (password.length < 6) {
+      setError('Le mot de passe doit contenir au moins 6 caractères');
+      return;
+    }
     setLoading(true);
     try {
       const base = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
@@ -34,14 +38,23 @@ export default function RegisterForm() {
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data.message || data.error || 'Erreur lors de l\'inscription');
+        let errorMsg = data.message || data.error || 'Erreur lors de l\'inscription';
+        if (errorMsg.includes('already exists') || errorMsg.includes('existe')) errorMsg = 'Cet email est déjà utilisé';
+        if (errorMsg.includes('invalid email')) errorMsg = 'Email invalide';
+        if (errorMsg.includes('required')) errorMsg = 'Tous les champs sont obligatoires';
+        setError(errorMsg);
         setLoading(false);
         return;
       }
       // Registration successful - redirect to login
       router.push('/login');
     } catch (err: any) {
-      setError(err.message || 'Erreur réseau');
+      const errMsg = err.message || 'Erreur réseau';
+      if (errMsg.includes('fetch')) {
+        setError('Impossible de se connecter au serveur. Vérifiez votre connexion Internet.');
+      } else {
+        setError(errMsg);
+      }
     } finally {
       setLoading(false);
     }

@@ -23,6 +23,7 @@ export function AvatarDisplay({
   const sizeClass = sizeClasses[size]
   const [imageKey, setImageKey] = useState(0)
   const [currentUrl, setCurrentUrl] = useState(avatarUrl)
+  const [imageLoadError, setImageLoadError] = useState(false)
 
   // Chaque fois que avatarUrl change, forcer un re-render complet avec cache-buster
   useEffect(() => {
@@ -41,6 +42,7 @@ export function AvatarDisplay({
       urlWithCacheBuster = `${avatarUrl}${sep}cb=${timestamp}-${random}`
       
       setCurrentUrl(urlWithCacheBuster)
+      setImageLoadError(false)
       setImageKey((prev) => prev + 1)
     }
   }, [avatarUrl, currentUrl])
@@ -49,7 +51,7 @@ export function AvatarDisplay({
     <div
       className={`rounded-full bg-gradient-to-tr from-indigo-500 to-emerald-400 flex items-center justify-center text-white font-bold overflow-hidden shadow-lg flex-shrink-0 ${sizeClass} ${className}`}
     >
-      {currentUrl ? (
+      {currentUrl && !imageLoadError ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           key={imageKey}
@@ -58,6 +60,8 @@ export function AvatarDisplay({
           className={`w-full h-full object-cover`}
           onError={() => {
             console.error('Failed to load avatar image:', currentUrl)
+            console.warn('⚠️  Vérifiez que le bucket Supabase "avatars" est PUBLIC dans les paramètres RLS')
+            setImageLoadError(true)
           }}
           onLoad={() => {
             console.log('[AvatarDisplay] Avatar image loaded successfully')

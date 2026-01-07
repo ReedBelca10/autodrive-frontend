@@ -28,7 +28,12 @@ export default function LoginForm() {
       
       if (!res.ok) {
         const data = await res.json();
-        setError(data.message || data.error || 'Erreur lors de la connexion');
+        // Traduire les messages d'erreur du backend
+        let errorMsg = data.message || data.error || 'Erreur lors de la connexion';
+        if (errorMsg.includes('not found') || errorMsg.includes('Utilisateur')) errorMsg = 'Email ou mot de passe incorrect';
+        if (errorMsg.includes('invalid')) errorMsg = 'Email ou mot de passe incorrect';
+        if (errorMsg.includes('credentials')) errorMsg = 'Email ou mot de passe incorrect';
+        setError(errorMsg);
         setLoading(false);
         return;
       }
@@ -65,7 +70,12 @@ export default function LoginForm() {
         router.push('/');
       }
     } catch (err: any) {
-      setError(err.message || 'Erreur réseau');
+      const errMsg = err.message || 'Erreur réseau';
+      if (errMsg.includes('fetch')) {
+        setError('Impossible de se connecter au serveur. Vérifiez votre connexion Internet.');
+      } else {
+        setError(errMsg);
+      }
     } finally {
       setLoading(false);
     }
@@ -112,7 +122,7 @@ export default function LoginForm() {
               <div>
                 <div className="flex items-center justify-between">
                   <label className="block text-sm font-medium text-gray-700">Mot de passe</label>
-                  <Link href="#" className="text-sm text-gray-400 hover:underline">Mot de passe oublié ?</Link>
+                  <Link href="/auth/forgot-password" className="text-sm text-blue-600 hover:text-blue-700 underline">Mot de passe oublié ?</Link>
                 </div>
                 <div className="mt-2 relative">
                   <input

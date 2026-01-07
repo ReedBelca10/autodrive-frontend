@@ -5,10 +5,13 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 // Navbar and Footer are provided by the root layout
-import { MapPin, Calendar, CheckCircle, CalendarDays, Car, Shield, Users, Star } from 'lucide-react';
-import { useState } from 'react';
+import { MapPin, Calendar, CheckCircle, CalendarDays, Car, Shield, Users, Star, Fuel, Settings, ArrowRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { VehicleImage } from '@/components/VehicleImage';
 
 export default function Home() {
+  const router = useRouter();
   const [searchData, setSearchData] = useState({
     location: '',
     startDate: '',
@@ -17,6 +20,61 @@ export default function Home() {
     returnTime: '08:00',
     returnLocation: '',
   });
+
+  // State for featured vehicles from API
+  const [featuredVehicles, setFeaturedVehicles] = useState<any[]>([]);
+  const [loadingFeatured, setLoadingFeatured] = useState(true);
+  
+  // State for latest blog posts
+  const [latestPosts, setLatestPosts] = useState<any[]>([]);
+  const [loadingPosts, setLoadingPosts] = useState(true);
+  
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
+
+  // Fetch featured vehicles (6 most expensive)
+  useEffect(() => {
+    const fetchFeaturedVehicles = async () => {
+      try {
+        setLoadingFeatured(true);
+        const response = await fetch(`${API_BASE_URL}/vehicles`);
+        if (response.ok) {
+          const data = await response.json();
+          // Sort by daily rate descending and take first 6
+          const featured = (Array.isArray(data) ? data : [])
+            .filter((v: any) => v.isActive !== false) // Only active vehicles
+            .sort((a: any, b: any) => (b.dailyRate || 0) - (a.dailyRate || 0))
+            .slice(0, 6);
+          setFeaturedVehicles(featured);
+        }
+      } catch (error) {
+        console.error('Error fetching featured vehicles:', error);
+      } finally {
+        setLoadingFeatured(false);
+      }
+    };
+
+    fetchFeaturedVehicles();
+  }, []);
+
+  // Fetch latest blog posts
+  useEffect(() => {
+    const fetchLatestPosts = async () => {
+      try {
+        setLoadingPosts(true);
+        const response = await fetch(`${API_BASE_URL}/blog/latest?limit=3`);
+        if (response.ok) {
+          const data = await response.json();
+          setLatestPosts(Array.isArray(data) ? data : []);
+        }
+      } catch (error) {
+        console.error('Error fetching blog posts:', error);
+      } finally {
+        setLoadingPosts(false);
+      }
+    };
+
+    fetchLatestPosts();
+  }, []);
 
   const vehicles = [
     {
@@ -107,14 +165,34 @@ export default function Home() {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Validation
+    if (!searchData.startDate || !searchData.returnDate) {
+      alert('Veuillez sélectionner les dates de départ et de retour');
+      return;
+    }
+
+    const start = new Date(`${searchData.startDate}T${searchData.startTime}`);
+    const end = new Date(`${searchData.returnDate}T${searchData.returnTime}`);
+
+    if (start >= end) {
+      alert('La date de retour doit être après la date de départ');
+      return;
+    }
+
+    // Navigate to search page with parameters
     const params = new URLSearchParams({
-      location: searchData.location,
       startDate: searchData.startDate,
       startTime: searchData.startTime,
       returnDate: searchData.returnDate,
       returnTime: searchData.returnTime,
     });
-    window.location.href = `/vehicles?${params.toString()}`;
+
+    if (searchData.location) {
+      params.append('location', searchData.location);
+    }
+
+    router.push(`/vehicles/search?${params.toString()}`);
   };
 
   return (
@@ -329,40 +407,74 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
-            {vehicles.map((vehicle) => (
-              <Link key={vehicle.id} href={`/vehicles/${vehicle.id}`}>
-                <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 group cursor-pointer border-0 rounded-xl transform hover:-translate-y-2">
-                  <div className="relative h-56 bg-gray-200 overflow-hidden">
-                    <Image
-                      src={vehicle.image}
-                      alt={vehicle.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-cover group-hover:scale-110 transition duration-500"
-                    />
-                    <div className="absolute top-4 left-4 bg-blue-600 text-white px-4 py-2 rounded-full text-xs font-bold shadow-lg">
-                      Disponible
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <h3 className="text-xl font-bold text-gray-900 mb-1">{vehicle.name}</h3>
-                    <p className="text-sm text-gray-600 mb-4">{vehicle.type} • {vehicle.year}</p>
-                    <div className="grid grid-cols-2 gap-3 mb-6 text-xs text-gray-700 font-medium">
-                      {vehicle.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center">
-                          <span className="text-blue-600 mr-1">✓</span>
-                          <span>{feature}</span>
+            {loadingFeatured ? (
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-600">Chargement des véhicules en vedette...</p>
+              </div>
+            ) : featuredVehicles.length > 0 ? (
+              featuredVehicles.map((vehicle) => (
+                <Link key={vehicle._id} href={`/vehicles/${vehicle._id}`}>
+                  <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 group cursor-pointer border-0 rounded-xl transform hover:-translate-y-2">
+                    {/* Image */}
+                    <div className="relative h-56 bg-gray-200 overflow-hidden">
+                      {vehicle.mediaUrls && vehicle.mediaUrls.length > 0 ? (
+                        <VehicleImage
+                          src={vehicle.mediaUrls[0]}
+                          alt={vehicle.name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                          className="object-cover group-hover:scale-110 transition duration-500"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
+                          <p className="text-gray-500">Pas d'image</p>
                         </div>
-                      ))}
+                      )}
                     </div>
-                    <div className="flex justify-between items-center border-t border-gray-200 pt-4">
-                      <span className="text-3xl font-bold text-blue-600">{vehicle.price}</span>
-                      <span className="text-sm text-gray-600 font-medium">/jour</span>
+
+                    {/* Content */}
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">{vehicle.name}</h3>
+                      <p className="text-sm text-gray-600 mb-4">{vehicle.bodyType} • {vehicle.year}</p>
+
+                      {/* Quick Details Grid */}
+                      <div className="grid grid-cols-2 gap-2 mb-6 text-xs text-gray-700 font-medium">
+                        <div className="flex items-center gap-1">
+                          <Users size={14} className="text-blue-600" />
+                          <span>{vehicle.passengers} places</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Fuel size={14} className="text-blue-600" />
+                          <span>{vehicle.fuel}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <Settings size={14} className="text-blue-600" />
+                          <span>{vehicle.transmission}</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <MapPin size={14} className="text-blue-600" />
+                          <span>{vehicle.city}</span>
+                        </div>
+                      </div>
+
+                      {/* Price Section */}
+                      <div className="border-t border-gray-200 pt-4">
+                        <div className="flex justify-between items-center">
+                          <span className="text-3xl font-bold text-blue-600">
+                            {vehicle.dailyRate.toLocaleString()}
+                          </span>
+                          <span className="text-sm text-gray-600 font-medium">FCFA/jour</span>
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                </Card>
-              </Link>
-            ))}
+                  </Card>
+                </Link>
+              ))
+            ) : (
+              <div className="col-span-full text-center py-12">
+                <p className="text-gray-600">Aucun véhicule disponible pour l'affichage en vedette</p>
+              </div>
+            )}
           </div>
 
           <div className="text-center">
@@ -473,6 +585,96 @@ export default function Home() {
               </Card>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* Blog Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+              Blog et Actualités
+            </h2>
+            <p className="text-gray-600 text-lg">
+              Découvrez nos conseils, guides et actualités pour vos trajets en voiture
+            </p>
+          </div>
+
+          {loadingPosts ? (
+            <div className="flex justify-center">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-600"></div>
+            </div>
+          ) : latestPosts.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-gray-600 text-lg">Aucun article disponible pour le moment.</p>
+            </div>
+          ) : (
+            <>
+              <div className="grid md:grid-cols-3 gap-8">
+                {latestPosts.map((post) => (
+                  <Link
+                    key={post._id}
+                    href={`/blog/${post.slug}`}
+                    className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition group"
+                  >
+                    {/* Image */}
+                    {post.imageUrl && (
+                      <div className="relative h-48 bg-gray-200 overflow-hidden">
+                        <img
+                          src={post.imageUrl}
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition"
+                        />
+                        <div className="absolute top-3 right-3">
+                          <span className="bg-orange-600 text-white text-xs px-3 py-1 rounded-full capitalize font-medium">
+                            {post.category}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Contenu */}
+                    <div className="p-6">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-orange-600 line-clamp-2">
+                        {post.title}
+                      </h3>
+
+                      <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+                        {post.excerpt}
+                      </p>
+
+                      {/* Métadonnées */}
+                      <div className="flex items-center justify-between text-xs text-gray-500">
+                        <span>{post.author}</span>
+                        <span>
+                          {new Date(post.publishedAt).toLocaleDateString('fr-FR', {
+                            month: 'short',
+                            day: 'numeric',
+                          })}
+                        </span>
+                      </div>
+
+                      {/* Lire plus */}
+                      <div className="mt-4 flex items-center gap-2 text-orange-600 font-semibold group-hover:gap-3 transition">
+                        <span>Lire l'article</span>
+                        <ArrowRight className="w-4 h-4" />
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+
+              {/* Voir tous les articles */}
+              <div className="text-center mt-12">
+                <Link
+                  href="/blog"
+                  className="inline-block bg-orange-600 text-white font-bold px-8 py-3 rounded-lg hover:bg-orange-700 transition"
+                >
+                  Voir tous les articles
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </section>
 

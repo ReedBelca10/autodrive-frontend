@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LayoutDashboard, Car, Users, MessageSquare, Bookmark, LogOut, Menu, X, MapPin } from 'lucide-react';
+import { LayoutDashboard, Car, Users, MessageSquare, Bookmark, LogOut, Menu, X, MapPin, BookOpen } from 'lucide-react';
 
 export default function AdminLayout({
   children,
@@ -33,6 +33,7 @@ export default function AdminLayout({
     { icon: Users, label: 'Utilisateurs', href: '/admin/users' },
     { icon: MapPin, label: 'Nos agences', href: '/admin/agencies' },
     { icon: Bookmark, label: 'Réservations', href: '/admin/reservations' },
+    { icon: BookOpen, label: 'Blog', href: '/admin/blog' },
     { icon: MessageSquare, label: 'Messages', href: '/admin/messages' },
   ];
 

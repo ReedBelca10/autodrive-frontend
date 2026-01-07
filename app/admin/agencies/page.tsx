@@ -19,6 +19,7 @@ interface Agency {
   longitude: number;
   phone?: string;
   email?: string;
+  description?: string;
   isActive: boolean;
   createdAt: string;
 }
@@ -138,13 +139,15 @@ export default function AgenciesPage() {
             <table className="w-full">
               <thead className="bg-gradient-to-r from-emerald-900/80 to-gray-900/80 border-b border-emerald-700/50 sticky top-0">
                 <tr>
-                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300">Nom</th>
-                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300">Ville</th>
-                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300">Gestionnaire</th>
-                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300">Téléphone</th>
-                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300">Email</th>
-                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300">Localisation</th>
-                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300">Actions</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300 min-w-32">Nom</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300 min-w-24">Ville</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300 min-w-32">Gestionnaire</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300 min-w-28">Téléphone</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300 min-w-32">Email</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300 min-w-40">Description</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300 min-w-28">Date création</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300 min-w-20">Statut</th>
+                  <th className="px-6 py-4 text-left text-sm font-bold text-emerald-300 min-w-24">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-700/50">
@@ -160,24 +163,42 @@ export default function AgenciesPage() {
                     <td className="px-6 py-4 text-sm text-gray-300">{agency.managerId?.fullName || <span className="text-gray-600 italic">N/A</span>}</td>
                     <td className="px-6 py-4 text-sm text-gray-400">{agency.phone || <span className="text-gray-600 italic">-</span>}</td>
                     <td className="px-6 py-4 text-sm text-gray-400">{agency.email || <span className="text-gray-600 italic">-</span>}</td>
-                    <td className="px-6 py-4 text-sm">
+                    <td className="px-6 py-4 text-sm text-gray-400 max-w-xs truncate" title={agency.description || ''}>
+                      {agency.description || <span className="text-gray-600 italic">-</span>}
+                    </td>
+                    <td className="px-6 py-4 text-sm text-gray-300">
+                      {new Date(agency.createdAt).toLocaleDateString('fr-FR')}
+                    </td>
+                    <td className="px-6 py-4">
+                      <button
+                        onClick={() => toggleAgencyStatus(agency._id)}
+                        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 ${
+                          agency.isActive 
+                            ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white' 
+                            : 'bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-gray-300'
+                        }`}
+                      >
+                        {agency.isActive ? <Check size={16} /> : <X size={16} />}
+                        {agency.isActive ? 'Actif' : 'Inactif'}
+                      </button>
+                    </td>
+                    <td className="px-6 py-4 text-sm flex gap-2">
                       <a
                         href={`https://www.google.com/maps?q=${agency.latitude},${agency.longitude}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-gradient-to-r from-cyan-600/60 to-blue-600/60 hover:from-cyan-600 hover:to-blue-600 text-cyan-300 font-semibold transition-all duration-200"
+                        className="inline-flex items-center text-cyan-300 hover:text-cyan-200 transition-colors"
+                        title="Voir sur Google Maps"
                       >
-                        <MapPin size={16} /> Voir
+                        <MapPin size={16} />
                       </a>
-                    </td>
-                    <td className="px-6 py-4 text-sm flex gap-2">
                       <Link href={`/admin/agencies/${agency._id}`}>
                         <Button 
                           variant="ghost"
                           size="sm" 
                           className="hover:bg-blue-900/60 hover:text-blue-300 text-gray-400 transition-all duration-200 hover:shadow-lg flex items-center gap-1"
                         >
-                          <Edit2 size={16} /> Modifier
+                          <Edit2 size={16} />
                         </Button>
                       </Link>
                       <Button
@@ -186,7 +207,7 @@ export default function AgenciesPage() {
                         onClick={() => deleteAgency(agency._id)}
                         className="hover:bg-red-900/60 hover:text-red-300 text-gray-400 transition-all duration-200 hover:shadow-lg flex items-center gap-1"
                       >
-                        <Trash2 size={16} /> Supprimer
+                        <Trash2 size={16} />
                       </Button>
                     </td>
                   </tr>

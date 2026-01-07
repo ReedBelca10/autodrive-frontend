@@ -285,7 +285,7 @@ export default function AgencyFormPage() {
               disabled={submitting}
               className="bg-blue-600 hover:bg-blue-700 flex-1"
             >
-              {submitting ? 'Enregistrement...' : isEdit ? 'Mettre à jour' : 'Créer l&apos;agence'}
+              {submitting ? 'Enregistrement...' : isEdit ? 'Mettre à jour' : 'Créer l\'agence'}
             </Button>
             <Link href="/admin/agencies" className="flex-1">
               <Button type="button" variant="outline" className="w-full">
