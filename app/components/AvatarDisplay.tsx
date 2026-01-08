@@ -28,7 +28,6 @@ export function AvatarDisplay({
   // Chaque fois que avatarUrl change, forcer un re-render complet avec cache-buster
   useEffect(() => {
     if (avatarUrl && avatarUrl !== currentUrl) {
-      console.log('[AvatarDisplay] URL changed, forcing refresh:', avatarUrl)
       
       // Ajouter un cache-buster pour s'assurer que le navigateur
       // recharge l'image plutôt que de la servir depuis le cache
@@ -59,12 +58,10 @@ export function AvatarDisplay({
           alt="avatar"
           className={`w-full h-full object-cover`}
           onError={() => {
-            console.error('Failed to load avatar image:', currentUrl)
-            console.warn('⚠️  Vérifiez que le bucket Supabase "avatars" est PUBLIC dans les paramètres RLS')
             setImageLoadError(true)
           }}
           onLoad={() => {
-            console.log('[AvatarDisplay] Avatar image loaded successfully')
+            // Avatar loaded
           }}
         />
       ) : (

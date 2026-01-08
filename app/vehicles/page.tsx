@@ -79,28 +79,14 @@ export default function VehiclesPage() {
       try {
         setLoading(true);
         const url = `${API_BASE_URL}/vehicles`;
-        console.log('Fetching vehicles from:', url);
 
         const response = await fetch(url);
-        console.log('Response status:', response.status);
 
         if (!response.ok) {
           throw new Error(`API error: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
-        console.log('Vehicles received:', data);
-
-        // Vérifier les URLs des médias
-        if (Array.isArray(data)) {
-          data.forEach((vehicle: Vehicle) => {
-            if (vehicle.mediaUrls && vehicle.mediaUrls.length > 0) {
-              console.log(`Vehicle ${vehicle.name} media URLs:`, vehicle.mediaUrls);
-            } else {
-              console.warn(`Vehicle ${vehicle.name} has no media URLs`);
-            }
-          });
-        }
 
         // S'assurer que c'est un tableau
         const vehicles = Array.isArray(data) ? data : [];

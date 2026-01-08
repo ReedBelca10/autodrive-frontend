@@ -27,7 +27,7 @@ interface Agency {
   city: string;
 }
 
-export default function EditVehiclePage() {
+export default function EditManagerVehiclePage() {
   const params = useParams();
   const vehicleId = params.id as string;
 
@@ -47,18 +47,17 @@ export default function EditVehiclePage() {
   });
 
   const [years, setYears] = useState<number[]>([]);
-  const [agencies, setAgencies] = useState<Agency[]>([]);
   const [transmissions, setTransmissions] = useState<string[]>([]);
   const [fuels, setFuels] = useState<string[]>([]);
   const [bodyTypes, setBodyTypes] = useState<string[]>([]);
   const [equipments, setEquipments] = useState<string[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
 
   const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [submitLoading, setSubmitLoading] = useState(false);
   const [error, setError] = useState('');
   const [configLoading, setConfigLoading] = useState(true);
+  const [managerAgencyId, setManagerAgencyId] = useState('');
 
   const router = useRouter();
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
@@ -75,13 +74,13 @@ export default function EditVehiclePage() {
 
   const loadConfigurations = async () => {
     try {
-      const [yearsRes, transRes, fuelRes, bodyRes, equipRes, agenciesRes] = await Promise.all([
+      const [yearsRes, transRes, fuelRes, bodyRes, equipRes, profileRes] = await Promise.all([
         fetch(`${API_BASE}/vehicles/config/years`, { credentials: 'include' }),
         fetch(`${API_BASE}/vehicles/config/transmissions`, { credentials: 'include' }),
         fetch(`${API_BASE}/vehicles/config/fuels`, { credentials: 'include' }),
         fetch(`${API_BASE}/vehicles/config/body-types`, { credentials: 'include' }),
         fetch(`${API_BASE}/vehicles/config/equipments`, { credentials: 'include' }),
-        fetch(`${API_BASE}/agencies`, { credentials: 'include' }),
+        fetch(`${API_BASE}/auth/profile`, { credentials: 'include' }),
       ]);
 
       if (yearsRes.ok) setYears(await yearsRes.json());
@@ -90,11 +89,14 @@ export default function EditVehiclePage() {
       if (bodyRes.ok) setBodyTypes(await bodyRes.json());
       if (equipRes.ok) setEquipments(await equipRes.json());
 
-      if (agenciesRes.ok) {
-        const data = await agenciesRes.json();
-        setAgencies(Array.isArray(data) ? data : []);
-        const uniqueCities = Array.from(new Set(data.map((a: Agency) => a.city))) as string[];
-        setCities(uniqueCities);
+      if (profileRes.ok) {
+        const profile = await profileRes.json();
+        setManagerAgencyId(profile.agencyId);
+        setForm((prev) => ({
+          ...prev,
+          agencyId: profile.agencyId,
+          city: profile.city || '',
+        }));
       }
     } catch (err) {
       setError('Erreur lors du chargement des configurations');
@@ -111,6 +113,13 @@ export default function EditVehiclePage() {
 
       if (response.ok) {
         const data = await response.json();
+        
+        // Vérifier que ce véhicule appartient au manager
+        if (data.agencyId._id !== managerAgencyId && data.agencyId !== managerAgencyId) {
+          setError('Accès refusé: Ce véhicule n\'appartient pas à votre agence');
+          return;
+        }
+
         setForm({
           name: data.name,
           dailyRate: data.dailyRate,
@@ -154,7 +163,6 @@ export default function EditVehiclePage() {
         const file = files[i];
         const fileSize = file.size / (1024 * 1024); // en MB
 
-        // Validation de la taille
         if (fileSize > 10) {
           setError(`Le fichier "${file.name}" dépasse 10 MB`);
           setUploading(false);
@@ -162,7 +170,6 @@ export default function EditVehiclePage() {
           return;
         }
 
-        // Validation du type
         const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4'];
         if (!validTypes.includes(file.type)) {
           setError(`Le type de fichier "${file.type}" n'est pas supporté`);
@@ -178,7 +185,6 @@ export default function EditVehiclePage() {
           method: 'POST',
           credentials: 'include',
           headers: {
-            // Ne pas mettre Content-Type pour FormData - le navigateur le fait automatiquement
             'Accept': 'application/json',
           },
           body: formData,
@@ -198,13 +204,11 @@ export default function EditVehiclePage() {
         newUrls.push(result.publicUrl);
       }
 
-      // Ajouter toutes les URL à la fois
       setForm({ ...form, mediaUrls: [...form.mediaUrls, ...newUrls] });
       setError('');
       e.target.value = '';
     } catch (err: any) {
-      console.error('Upload error:', err);
-      setError(err.message || 'Erreur lors de l\'upload. Vérifiez les logs du serveur');
+      setError(err.message || 'Erreur lors de l\'upload');
     } finally {
       setUploading(false);
     }
@@ -239,7 +243,7 @@ export default function EditVehiclePage() {
       });
 
       if (response.ok) {
-        router.push('/admin/vehicles');
+        router.push('/manager');
       } else {
         const data = await response.json();
         setError(data.message || 'Erreur lors de la modification du véhicule');
@@ -261,7 +265,7 @@ export default function EditVehiclePage() {
       });
 
       if (response.ok) {
-        router.push('/admin/vehicles');
+        router.push('/manager');
       } else {
         setError('Erreur lors de la suppression');
       }
@@ -416,42 +420,26 @@ export default function EditVehiclePage() {
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-200 mb-1">
-                  Ville *
+                  Ville
                 </label>
-                <select
+                <input
+                  type="text"
                   value={form.city}
-                  onChange={(e) => setForm({ ...form, city: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-600"
-                  required
-                >
-                  <option value="">Sélectionner une ville</option>
-                  {cities.map((city) => (
-                    <option key={city} value={city}>
-                      {city}
-                    </option>
-                  ))}
-                </select>
+                  disabled
+                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-400"
+                />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-200 mb-1">
-                  Agence *
+                  Agence
                 </label>
-                <select
+                <input
+                  type="text"
                   value={form.agencyId}
-                  onChange={(e) => setForm({ ...form, agencyId: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-600"
-                  required
-                >
-                  <option value="">Sélectionner une agence</option>
-                  {agencies
-                    .filter((agency) => form.city === '' || agency.city === form.city)
-                    .map((agency) => (
-                      <option key={agency._id} value={agency._id}>
-                        {agency.name}
-                      </option>
-                    ))}
-                </select>
+                  disabled
+                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-400"
+                />
               </div>
             </div>
           </div>

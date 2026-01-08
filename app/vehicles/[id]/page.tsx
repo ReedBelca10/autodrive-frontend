@@ -53,17 +53,14 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
       try {
         setLoading(true);
         const url = `${API_BASE_URL}/vehicles/${vehicleId}`;
-        console.log('Fetching vehicle from:', url);
 
         const response = await fetch(url);
-        console.log('Response status:', response.status);
 
         if (!response.ok) {
           throw new Error(`API error: ${response.status} ${response.statusText}`);
         }
 
         const data = await response.json();
-        console.log('Vehicle data received:', data);
 
         setVehicle(data);
         setError(null);

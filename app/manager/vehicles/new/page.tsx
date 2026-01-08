@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useRouter, useParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Upload, X } from 'lucide-react';
@@ -25,12 +25,16 @@ interface Agency {
   _id: string;
   name: string;
   city: string;
+  managerId?: string;
 }
 
-export default function EditVehiclePage() {
-  const params = useParams();
-  const vehicleId = params.id as string;
+interface ManagerProfile {
+  agencyId: string;
+  agencyName: string;
+  city: string;
+}
 
+export default function NewVehiclePage() {
   const [form, setForm] = useState<VehicleForm>({
     name: '',
     dailyRate: 0,
@@ -47,41 +51,59 @@ export default function EditVehiclePage() {
   });
 
   const [years, setYears] = useState<number[]>([]);
-  const [agencies, setAgencies] = useState<Agency[]>([]);
   const [transmissions, setTransmissions] = useState<string[]>([]);
   const [fuels, setFuels] = useState<string[]>([]);
   const [bodyTypes, setBodyTypes] = useState<string[]>([]);
   const [equipments, setEquipments] = useState<string[]>([]);
-  const [cities, setCities] = useState<string[]>([]);
 
   const [uploading, setUploading] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [submitLoading, setSubmitLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
   const [configLoading, setConfigLoading] = useState(true);
+  const [manager, setManager] = useState<ManagerProfile | null>(null);
 
   const router = useRouter();
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
   useEffect(() => {
-    loadConfigurations();
+    loadManagerAndConfig();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!configLoading && vehicleId) {
-      loadVehicle();
-    }
-  }, [configLoading, vehicleId]);
-
-  const loadConfigurations = async () => {
+  const loadManagerAndConfig = async () => {
     try {
-      const [yearsRes, transRes, fuelRes, bodyRes, equipRes, agenciesRes] = await Promise.all([
+      // Fetch manager profile
+      const token = localStorage.getItem('token');
+      const managerRes = await fetch(`${API_BASE}/auth/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (managerRes.ok) {
+        const managerData = await managerRes.json();
+        if (managerData.agencyId) {
+          setManager({
+            agencyId: managerData.agencyId,
+            agencyName: managerData.agencyName || 'Mon Agence',
+            city: managerData.city || '',
+          });
+          setForm((prev) => ({
+            ...prev,
+            agencyId: managerData.agencyId,
+            city: managerData.city || '',
+          }));
+        }
+      }
+
+      // Fetch configurations
+      const [yearsRes, transRes, fuelRes, bodyRes, equipRes] = await Promise.all([
         fetch(`${API_BASE}/vehicles/config/years`, { credentials: 'include' }),
         fetch(`${API_BASE}/vehicles/config/transmissions`, { credentials: 'include' }),
         fetch(`${API_BASE}/vehicles/config/fuels`, { credentials: 'include' }),
         fetch(`${API_BASE}/vehicles/config/body-types`, { credentials: 'include' }),
         fetch(`${API_BASE}/vehicles/config/equipments`, { credentials: 'include' }),
-        fetch(`${API_BASE}/agencies`, { credentials: 'include' }),
       ]);
 
       if (yearsRes.ok) setYears(await yearsRes.json());
@@ -89,49 +111,10 @@ export default function EditVehiclePage() {
       if (fuelRes.ok) setFuels(await fuelRes.json());
       if (bodyRes.ok) setBodyTypes(await bodyRes.json());
       if (equipRes.ok) setEquipments(await equipRes.json());
-
-      if (agenciesRes.ok) {
-        const data = await agenciesRes.json();
-        setAgencies(Array.isArray(data) ? data : []);
-        const uniqueCities = Array.from(new Set(data.map((a: Agency) => a.city))) as string[];
-        setCities(uniqueCities);
-      }
     } catch (err) {
-      setError('Erreur lors du chargement des configurations');
+      setError('Erreur lors du chargement des données');
     } finally {
       setConfigLoading(false);
-    }
-  };
-
-  const loadVehicle = async () => {
-    try {
-      const response = await fetch(`${API_BASE}/vehicles/${vehicleId}`, {
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        const data = await response.json();
-        setForm({
-          name: data.name,
-          dailyRate: data.dailyRate,
-          passengers: data.passengers,
-          year: data.year,
-          transmission: data.transmission,
-          fuel: data.fuel,
-          city: data.city,
-          agencyId: data.agencyId._id || data.agencyId,
-          bodyType: data.bodyType,
-          description: data.description,
-          equipment: data.equipment || [],
-          mediaUrls: data.mediaUrls || [],
-        });
-      } else {
-        setError('Véhicule non trouvé');
-      }
-    } catch (err) {
-      setError('Erreur lors du chargement du véhicule');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -139,151 +122,120 @@ export default function EditVehiclePage() {
     const files = e.target.files;
     if (!files) return;
 
-    if (form.mediaUrls.length + files.length > 5) {
-      setError('Maximum 5 fichiers autorisés');
-      e.target.value = '';
-      return;
-    }
-
     setUploading(true);
-    setError('');
-    const newUrls: string[] = [];
+    const formData = new FormData();
+    Array.from(files).forEach((file) => {
+      formData.append('files', file);
+    });
 
     try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const fileSize = file.size / (1024 * 1024); // en MB
+      const response = await fetch(`${API_BASE}/vehicles/upload`, {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      });
 
-        // Validation de la taille
-        if (fileSize > 10) {
-          setError(`Le fichier "${file.name}" dépasse 10 MB`);
-          setUploading(false);
-          e.target.value = '';
-          return;
-        }
-
-        // Validation du type
-        const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4'];
-        if (!validTypes.includes(file.type)) {
-          setError(`Le type de fichier "${file.type}" n'est pas supporté`);
-          setUploading(false);
-          e.target.value = '';
-          return;
-        }
-
-        const formData = new FormData();
-        formData.append('file', file);
-
-        const uploadResponse = await fetch(`${API_BASE}/vehicles/upload/media`, {
-          method: 'POST',
-          credentials: 'include',
-          headers: {
-            // Ne pas mettre Content-Type pour FormData - le navigateur le fait automatiquement
-            'Accept': 'application/json',
-          },
-          body: formData,
-        });
-
-        if (!uploadResponse.ok) {
-          const errorData = await uploadResponse.json().catch(() => ({}));
-          throw new Error(errorData.message || `Erreur serveur ${uploadResponse.status}`);
-        }
-
-        const result = await uploadResponse.json();
-
-        if (!result.publicUrl) {
-          throw new Error('URL publique non retournée par le serveur');
-        }
-
-        newUrls.push(result.publicUrl);
+      if (response.ok) {
+        const data = await response.json();
+        setForm((prev) => ({
+          ...prev,
+          mediaUrls: [...prev.mediaUrls, ...data.urls],
+        }));
+      } else {
+        setError('Erreur lors de l\'upload');
       }
-
-      // Ajouter toutes les URL à la fois
-      setForm({ ...form, mediaUrls: [...form.mediaUrls, ...newUrls] });
-      setError('');
-      e.target.value = '';
-    } catch (err: any) {
-      console.error('Upload error:', err);
-      setError(err.message || 'Erreur lors de l\'upload. Vérifiez les logs du serveur');
+    } catch (err) {
+      setError('Erreur lors de l\'upload des fichiers');
     } finally {
       setUploading(false);
     }
   };
 
-  const removeMedia = (url: string) => {
-    setForm({ ...form, mediaUrls: form.mediaUrls.filter(u => u !== url) });
+  const toggleEquipment = (equip: string) => {
+    setForm((prev) => ({
+      ...prev,
+      equipment: prev.equipment.includes(equip)
+        ? prev.equipment.filter((e) => e !== equip)
+        : [...prev.equipment, equip],
+    }));
   };
 
-  const toggleEquipment = (equipment: string) => {
-    setForm({
-      ...form,
-      equipment: form.equipment.includes(equipment)
-        ? form.equipment.filter(e => e !== equipment)
-        : [...form.equipment, equipment],
-    });
+  const removeImage = (index: number) => {
+    setForm((prev) => ({
+      ...prev,
+      mediaUrls: prev.mediaUrls.filter((_, i) => i !== index),
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
-    setSubmitLoading(true);
 
+    if (!form.name || !form.dailyRate || !form.agencyId) {
+      setError('Veuillez remplir tous les champs obligatoires');
+      return;
+    }
+
+    setLoading(true);
     try {
-      const response = await fetch(`${API_BASE}/vehicles/${vehicleId}`, {
-        method: 'PUT',
+      const token = localStorage.getItem('token');
+      const response = await fetch(`${API_BASE}/vehicles`, {
+        method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-        credentials: 'include',
         body: JSON.stringify(form),
       });
 
       if (response.ok) {
-        router.push('/admin/vehicles');
+        setSuccess('Véhicule créé avec succès !');
+        setTimeout(() => {
+          router.push('/manager');
+        }, 1500);
       } else {
-        const data = await response.json();
-        setError(data.message || 'Erreur lors de la modification du véhicule');
-      }
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setSubmitLoading(false);
-    }
-  };
-
-  const deleteVehicle = async () => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) return;
-
-    try {
-      const response = await fetch(`${API_BASE}/vehicles/${vehicleId}`, {
-        method: 'DELETE',
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        router.push('/admin/vehicles');
-      } else {
-        setError('Erreur lors de la suppression');
+        const errorData = await response.json();
+        setError(errorData.message || 'Erreur lors de la création du véhicule');
       }
     } catch (err) {
-      setError('Erreur lors de la suppression');
+      setError('Erreur lors de la création du véhicule');
+    } finally {
+      setLoading(false);
     }
   };
 
-  if (configLoading || loading) return <div className="text-center py-8">Chargement...</div>;
+  if (configLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-gray-400">Chargement...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold mb-6">Modifier le véhicule</h1>
+    <div className="min-h-screen bg-gray-900 text-gray-100">
+      {/* Header */}
+      <div className="bg-gray-800 border-b border-gray-700">
+        <div className="max-w-6xl mx-auto px-6 py-8">
+          <h1 className="text-3xl font-bold">Ajouter un véhicule</h1>
+          <p className="text-gray-400 mt-2">Publiez un nouveau véhicule dans votre agence</p>
+        </div>
+      </div>
 
-      <Card className="bg-gray-800 border-gray-700 p-6">
+      <div className="max-w-6xl mx-auto px-6 py-8">
         {error && (
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600 mb-4">
+          <div className="mb-6 p-4 bg-red-900 border border-red-700 rounded-lg text-red-200">
             {error}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
+        {success && (
+          <div className="mb-6 p-4 bg-green-900 border border-green-700 rounded-lg text-green-200">
+            {success}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="space-y-8">
           {/* Informations de base */}
           <div>
             <h2 className="text-lg font-bold text-white mb-4">Informations de base</h2>
@@ -297,7 +249,8 @@ export default function EditVehiclePage() {
                   type="text"
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-600"
+                  placeholder="Ex: Mercedes C-Class 2023"
+                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-600"
                   required
                 />
               </div>
@@ -409,55 +362,42 @@ export default function EditVehiclePage() {
             </div>
           </div>
 
-          {/* Localisation */}
+          {/* Localisation - Pré-remplie et désactivée */}
           <div>
             <h2 className="text-lg font-bold text-white mb-4">Localisation</h2>
 
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-200 mb-1">
-                  Ville *
+                  Ville
                 </label>
-                <select
-                  value={form.city}
-                  onChange={(e) => setForm({ ...form, city: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-600"
-                  required
-                >
-                  <option value="">Sélectionner une ville</option>
-                  {cities.map((city) => (
-                    <option key={city} value={city}>
-                      {city}
-                    </option>
-                  ))}
-                </select>
+                <input
+                  type="text"
+                  value={form.city || 'N/A'}
+                  disabled
+                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-400 focus:outline-none opacity-60 cursor-not-allowed"
+                />
+                <p className="text-xs text-gray-500 mt-1">Automatiquement définie par votre agence</p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-200 mb-1">
-                  Agence *
+                  Agence
                 </label>
-                <select
-                  value={form.agencyId}
-                  onChange={(e) => setForm({ ...form, agencyId: e.target.value })}
-                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-600"
-                  required
-                >
-                  <option value="">Sélectionner une agence</option>
-                  {agencies
-                    .filter((agency) => form.city === '' || agency.city === form.city)
-                    .map((agency) => (
-                      <option key={agency._id} value={agency._id}>
-                        {agency.name}
-                      </option>
-                    ))}
-                </select>
+                <input
+                  type="text"
+                  value={manager?.agencyName || 'N/A'}
+                  disabled
+                  className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-gray-400 focus:outline-none opacity-60 cursor-not-allowed"
+                />
+                <p className="text-xs text-gray-500 mt-1">Automatiquement définie par votre compte</p>
               </div>
             </div>
           </div>
 
           {/* Description */}
           <div>
+            <h2 className="text-lg font-bold text-white mb-4">Description et détails</h2>
             <label className="block text-sm font-medium text-gray-200 mb-1">
               Description *
             </label>
@@ -465,7 +405,8 @@ export default function EditVehiclePage() {
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               rows={4}
-              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-600"
+              placeholder="Décrivez votre véhicule de manière détaillée..."
+              className="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-600"
               required
             />
           </div>
@@ -488,47 +429,35 @@ export default function EditVehiclePage() {
             </div>
           </div>
 
-          {/* Médias */}
+          {/* Images */}
           <div>
-            <h2 className="text-lg font-bold text-white mb-4">Médias (Maximum 5 fichiers)</h2>
+            <h2 className="text-lg font-bold text-white mb-4">Photos</h2>
 
-            {form.mediaUrls.length < 5 && (
-              <div className="border-2 border-dashed border-gray-600 rounded-lg p-6 text-center mb-4">
+            <div className="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center">
+              <Upload className="mx-auto mb-4 text-gray-400" size={32} />
+              <label className="cursor-pointer">
+                <span className="text-blue-400 hover:text-blue-300">Télécharger des images</span>
                 <input
                   type="file"
                   multiple
-                  accept="image/*,video/*"
+                  accept="image/*"
                   onChange={handleFileUpload}
                   disabled={uploading}
                   className="hidden"
-                  id="file-upload"
                 />
-                <label htmlFor="file-upload" className="cursor-pointer">
-                  <div className="flex items-center justify-center gap-2 text-gray-400">
-                    <Upload size={20} />
-                    <span>Cliquez pour ajouter des fichiers</span>
-                  </div>
-                  <p className="text-xs text-gray-500 mt-2">Jusqu'à 10 MB par fichier</p>
-                </label>
-              </div>
-            )}
+              </label>
+              <p className="text-gray-500 text-sm mt-2">ou glissez-déposez vos images</p>
+            </div>
 
             {form.mediaUrls.length > 0 && (
-              <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
-                {form.mediaUrls.map((url) => (
-                  <div key={url} className="relative group">
-                    <img
-                      src={url}
-                      alt="preview"
-                      className="w-full h-32 object-cover rounded-lg bg-gray-700"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                {form.mediaUrls.map((url, index) => (
+                  <div key={index} className="relative group">
+                    <img src={url} alt={`Vehicle ${index}`} className="w-full h-32 object-cover rounded-lg" />
                     <button
                       type="button"
-                      onClick={() => removeMedia(url)}
-                      className="absolute top-2 right-2 bg-red-600 hover:bg-red-700 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                      onClick={() => removeImage(index)}
+                      className="absolute top-1 right-1 bg-red-600 hover:bg-red-700 rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       <X size={16} />
                     </button>
@@ -538,32 +467,24 @@ export default function EditVehiclePage() {
             )}
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-2 pt-4">
+          {/* Buttons */}
+          <div className="flex gap-4">
             <Button
-              type="submit"
-              className="bg-blue-600 hover:bg-blue-700"
-              disabled={submitLoading || uploading}
-            >
-              {submitLoading ? 'Modification...' : 'Modifier le véhicule'}
-            </Button>
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={deleteVehicle}
-            >
-              Supprimer
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => router.back()}
+              onClick={() => router.push('/manager')}
+              className="flex-1 bg-gray-700 hover:bg-gray-600 text-white"
             >
               Annuler
             </Button>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 text-white"
+            >
+              {loading ? 'Création en cours...' : 'Créer le véhicule'}
+            </Button>
           </div>
         </form>
-      </Card>
+      </div>
     </div>
   );
 }

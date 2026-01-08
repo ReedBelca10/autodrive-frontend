@@ -119,7 +119,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition">
+                <a href="/blog" className="hover:text-white transition">
                   NOTRE BLOG
                 </a>
               </li>
@@ -134,7 +134,7 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="#" className="hover:text-white transition">
+                <a href="/blog" className="hover:text-white transition">
                   CONSEILS LOCATION DE VOITURES
                 </a>
               </li>
