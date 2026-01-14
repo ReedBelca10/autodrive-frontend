@@ -33,6 +33,8 @@
 - ✅ Dashboard manager avec gestion véhicules
 - ✅ Profil utilisateur
 - ✅ Blog avec articles
+- ✅ FAQ (Page publique + Admin)
+- ✅ Newsletter (Inscription + Admin)
 - ✅ Formulaire de contact
 - ✅ Responsif sur tous les appareils
 
@@ -139,7 +141,9 @@ Admin Authentifié
     ├── Vehicles Management → Tous les véhicules
     ├── Agencies Management → Agences & managers
     ├── Reservations Management → Toutes les réservations
-    └── Blog Management → Articles
+    ├── Blog Management → Articles
+    ├── FAQ Management → Gérer les questions
+    └── Newsletter Management → Liste des abonnés
 ```
 
 ---
@@ -228,6 +232,9 @@ app/
 │   ├── register/           # Page d'inscription
 │   ├── reset-password/     # Reset du mot de passe
 │   └── forgot-password/    # Oublier mot de passe
+│
+├── faq/                    # Page FAQ publique
+│   └── page.tsx
 │
 ├── vehicles/               # Listing public des véhicules
 │   ├── page.tsx            # Tous les véhicules avec filtres
@@ -402,6 +409,15 @@ components.json           # Shadcn config
 - Historique
 - Équipe
 - Valeurs
+```
+
+#### 8. **FAQ** (`/faq`)
+```tsx
+// app/faq/page.tsx
+- Accordéon de questions/réponses
+- Filtres par catégorie
+- Barre de recherche
+- Section "Encore des questions?"
 ```
 
 ### Pages Authentifiées

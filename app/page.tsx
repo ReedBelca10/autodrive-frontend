@@ -24,11 +24,16 @@ export default function Home() {
   // State for featured vehicles from API
   const [featuredVehicles, setFeaturedVehicles] = useState<any[]>([]);
   const [loadingFeatured, setLoadingFeatured] = useState(true);
-  
+
   // State for latest blog posts
   const [latestPosts, setLatestPosts] = useState<any[]>([]);
   const [loadingPosts, setLoadingPosts] = useState(true);
-  
+
+  // Newsletter state
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [subscribing, setSubscribing] = useState(false);
+  const [subscriptionStatus, setSubscriptionStatus] = useState<{ type: 'success' | 'error', message: string } | null>(null);
+
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
   // Fetch featured vehicles (6 most expensive)
@@ -165,7 +170,7 @@ export default function Home() {
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     if (!searchData.startDate || !searchData.returnDate) {
       alert('Veuillez sélectionner les dates de départ et de retour');
@@ -195,15 +200,46 @@ export default function Home() {
     router.push(`/vehicles/search?${params.toString()}`);
   };
 
+  const handleNewsletterSubscribe = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newsletterEmail) return;
+
+    setSubscribing(true);
+    setSubscriptionStatus(null);
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/newsletter/subscribe`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: newsletterEmail }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSubscriptionStatus({ type: 'success', message: 'Merci de vous être abonné !' });
+        setNewsletterEmail('');
+      } else {
+        setSubscriptionStatus({ type: 'error', message: data.message || "Une erreur est survenue lors de l'inscription." });
+      }
+    } catch (error) {
+      setSubscriptionStatus({ type: 'error', message: "Impossible de contacter le serveur. Veuillez réessayer plus tard." });
+    } finally {
+      setSubscribing(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-white">
-      
+
       {/* Hero Section */}
       <section className="relative bg-white overflow-visible min-h-[720px]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center py-12 md:py-20">
             <div className="max-w-2xl">
-                <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
+              <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6 leading-tight">
                 Location de vos
                 <br />
                 véhicules préférés
@@ -687,20 +723,33 @@ export default function Home() {
             Abonnez-vous pour bénéficier des dernières offres, des nouveaux arrivants et des réductions exclusives
           </p>
 
-          <form className="flex flex-col md:flex-row gap-3 max-w-lg mx-auto">
+          <form onSubmit={handleNewsletterSubscribe} className="flex flex-col md:flex-row gap-3 max-w-lg mx-auto">
             <input
               type="email"
               placeholder="Entrez votre adresse email"
+              value={newsletterEmail}
+              onChange={(e) => setNewsletterEmail(e.target.value)}
+              required
               className="flex-1 px-6 py-4 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium text-gray-800"
             />
-            <Button className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-4 rounded-xl transition-all duration-300 hover:shadow-lg">
-              S&apos;abonner
+            <Button
+              type="submit"
+              disabled={subscribing}
+              className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-4 rounded-xl transition-all duration-300 hover:shadow-lg disabled:opacity-70"
+            >
+              {subscribing ? "Chargement..." : "S'abonner"}
             </Button>
           </form>
+
+          {subscriptionStatus && (
+            <p className={`mt-4 font-medium ${subscriptionStatus.type === 'success' ? 'text-green-300' : 'text-red-300'}`}>
+              {subscriptionStatus.message}
+            </p>
+          )}
         </div>
       </section>
 
-      
+
     </main>
   );
 }

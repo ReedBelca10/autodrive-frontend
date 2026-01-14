@@ -3,7 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
-import { Calendar, User, Tag, ArrowLeft, Eye } from 'lucide-react';
+import { Calendar, User, Tag, ArrowLeft, Eye, Film, Music, Download, Image as ImageIcon } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
 
 interface BlogPost {
   _id: string;
@@ -17,6 +18,7 @@ interface BlogPost {
   tags: string[];
   publishedAt: string;
   views: number;
+  media?: { url: string; type: string; name: string }[];
 }
 
 interface RelatedPost {
@@ -27,6 +29,7 @@ interface RelatedPost {
   imageUrl: string;
   category: string;
   publishedAt: string;
+  media?: { url: string; type: string; name: string }[];
 }
 
 export default function BlogPostPage() {
@@ -35,7 +38,7 @@ export default function BlogPostPage() {
   const [post, setPost] = useState<BlogPost | null>(null);
   const [relatedPosts, setRelatedPosts] = useState<RelatedPost[]>([]);
   const [loading, setLoading] = useState(true);
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001/api';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -163,11 +166,69 @@ export default function BlogPostPage() {
 
         {/* Contenu */}
         <div className="prose prose-lg max-w-none mb-12">
-          <div
-            className="bg-white p-8 rounded-lg shadow-sm"
-            dangerouslySetInnerHTML={{ __html: post.content }}
-          />
+          <div className="bg-white p-8 rounded-lg shadow-sm">
+            <div className="markdown-content">
+              <ReactMarkdown>
+                {post.content || ''}
+              </ReactMarkdown>
+            </div>
+          </div>
         </div>
+
+        {/* Médias Supplémentaires */}
+        {post.media && post.media.length > 0 && (
+          <div className="mb-12">
+            <h3 className="text-2xl font-bold mb-6 text-gray-900">Médias associés</h3>
+            <div className="grid md:grid-cols-2 gap-6">
+              {post.media.map((item, index) => (
+                <div key={index} className="bg-white rounded-xl overflow-hidden shadow-md border border-gray-100">
+                  <div className="p-4 border-b border-gray-50 flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {item.type.startsWith('image/') ? (
+                        <ImageIcon className="w-5 h-5 text-blue-600" />
+                      ) : item.type.startsWith('video/') ? (
+                        <Film className="w-5 h-5 text-orange-600" />
+                      ) : (
+                        <Music className="w-5 h-5 text-purple-600" />
+                      )}
+                      <span className="font-medium text-gray-700 truncate max-w-[200px]">
+                        {item.name}
+                      </span>
+                    </div>
+                    <a
+                      href={item.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gray-400 hover:text-orange-600 transition"
+                      title="Télécharger"
+                    >
+                      <Download className="w-5 h-5" />
+                    </a>
+                  </div>
+                  <div className="p-2">
+                    {item.type.startsWith('image/') ? (
+                      <img
+                        src={item.url}
+                        alt={item.name}
+                        className="w-full h-auto rounded-lg"
+                      />
+                    ) : item.type.startsWith('video/') ? (
+                      <video controls className="w-full rounded-lg">
+                        <source src={item.url} type={item.type} />
+                        Votre navigateur ne supporte pas la lecture de vidéos.
+                      </video>
+                    ) : (
+                      <audio controls className="w-full mt-2">
+                        <source src={item.url} type={item.type} />
+                        Votre navigateur ne supporte pas la lecture d'audio.
+                      </audio>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Tags */}
         {post.tags && post.tags.length > 0 && (
@@ -202,15 +263,22 @@ export default function BlogPostPage() {
                   href={`/blog/${relatedPost.slug}`}
                   className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition group"
                 >
-                  {relatedPost.imageUrl && (
-                    <div className="relative h-40 bg-gray-200 overflow-hidden">
-                      <img
-                        src={relatedPost.imageUrl}
-                        alt={relatedPost.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition"
-                      />
-                    </div>
-                  )}
+                  {(() => {
+                    const firstMediaImage = relatedPost.media?.find(m => m.type.startsWith('image/'))?.url;
+                    const displayImage = (relatedPost.imageUrl === '/assets/blog-default.jpg' && firstMediaImage)
+                      ? firstMediaImage
+                      : (relatedPost.imageUrl || '/assets/blog-default.jpg');
+
+                    return (
+                      <div className="relative h-40 bg-gray-200 overflow-hidden">
+                        <img
+                          src={displayImage}
+                          alt={relatedPost.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition"
+                        />
+                      </div>
+                    );
+                  })()}
                   <div className="p-4">
                     <h3 className="font-bold text-gray-900 mb-2 group-hover:text-orange-600">
                       {relatedPost.title}

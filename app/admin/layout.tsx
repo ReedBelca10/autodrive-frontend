@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { LayoutDashboard, Car, Users, MessageSquare, Bookmark, LogOut, Menu, X, MapPin, BookOpen } from 'lucide-react';
+import { LayoutDashboard, Car, Users, MessageSquare, Bookmark, LogOut, Menu, X, MapPin, BookOpen, HelpCircle, Mail } from 'lucide-react';
 
 export default function AdminLayout({
   children,
@@ -32,8 +32,10 @@ export default function AdminLayout({
     { icon: Car, label: 'Véhicules', href: '/admin/vehicles' },
     { icon: Users, label: 'Utilisateurs', href: '/admin/users' },
     { icon: MapPin, label: 'Nos agences', href: '/admin/agencies' },
-    { icon: Bookmark, label: 'Réservations', href: '/admin/reservations' },
+    { icon: Bookmark, label: 'Réservation', href: '/admin/reservations' },
     { icon: BookOpen, label: 'Blog', href: '/admin/blog' },
+    { icon: HelpCircle, label: 'FAQ', href: '/admin/faq' },
+    { icon: Mail, label: 'Newsletter', href: '/admin/newsletter' },
     { icon: MessageSquare, label: 'Messages', href: '/admin/messages' },
   ];
 
@@ -41,9 +43,8 @@ export default function AdminLayout({
     <div className="flex h-screen bg-gray-900 text-gray-100">
       {/* Sidebar */}
       <div
-        className={`${
-          sidebarOpen ? 'w-64' : 'w-20'
-        } bg-gray-800 shadow-lg transition-all duration-300 flex flex-col`}
+        className={`${sidebarOpen ? 'w-64' : 'w-20'
+          } bg-gray-800 shadow-lg transition-all duration-300 flex flex-col`}
       >
         {/* Logo */}
         <div className="p-4 border-b border-gray-700 flex items-center justify-between">

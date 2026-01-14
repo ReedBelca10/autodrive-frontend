@@ -5,7 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
-import { ArrowLeft, Save, AlertCircle } from 'lucide-react';
+import { ArrowLeft, Save, AlertCircle, FileUp, Image as ImageIcon, Film, Music, X } from 'lucide-react';
 
 interface BlogPost {
   _id: string;
@@ -18,6 +18,7 @@ interface BlogPost {
   tags: string[];
   imageUrl: string;
   published: boolean;
+  media?: { url: string; type: string; name: string }[];
 }
 
 export default function EditBlogPostPage() {
@@ -29,6 +30,7 @@ export default function EditBlogPostPage() {
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [uploadingMedia, setUploadingMedia] = useState(false);
 
   const [form, setForm] = useState<BlogPost>({
     _id: '',
@@ -41,6 +43,7 @@ export default function EditBlogPostPage() {
     tags: [],
     imageUrl: '/assets/blog-default.jpg',
     published: false,
+    media: [],
   });
 
   // Fetch post
@@ -77,6 +80,72 @@ export default function EditBlogPostPage() {
     }));
   };
 
+  const handleMediaUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      setError('Le fichier est trop volumineux (max 10 MB)');
+      return;
+    }
+
+    setUploadingMedia(true);
+    setError('');
+
+    try {
+      console.log('[BlogEdit] Uploading media:', file.name);
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(`${API_BASE}/blog/upload/media`, {
+        method: 'POST',
+        body: formData,
+        credentials: 'include'
+      });
+
+      if (!response.ok) {
+        const errData = await response.json().catch(() => ({}));
+        console.error('[BlogEdit] Media upload failed:', response.status, errData);
+        throw new Error(errData.message || 'Erreur lors de l\'upload du média');
+      }
+
+      const data = await response.json();
+      console.log('[BlogEdit] Media uploaded successfully:', data.publicUrl);
+      setForm(prev => ({
+        ...prev,
+        media: [...(prev.media || []), {
+          url: data.publicUrl,
+          type: data.type,
+          name: file.name
+        }]
+      }));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Erreur d\'upload');
+    } finally {
+      setUploadingMedia(false);
+    }
+  };
+
+  const handleMarkdownImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const content = event.target?.result as string;
+      console.log('[BlogEdit] Markdown imported, content length:', content.length);
+      setForm(prev => ({ ...prev, content }));
+    };
+    reader.readAsText(file);
+  };
+
+  const removeMedia = (index: number) => {
+    setForm(prev => ({
+      ...prev,
+      media: (prev.media || []).filter((_, i) => i !== index)
+    }));
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
@@ -102,7 +171,9 @@ export default function EditBlogPostPage() {
     setSubmitting(true);
 
     try {
-      const tags = Array.isArray(form.tags) ? form.tags : (form.tags as unknown as string).split(',').map(t => t.trim());
+      console.log('[BlogEdit] Submitting form:', form);
+      const tagsString = Array.isArray(form.tags) ? form.tags.join(', ') : (form.tags || '');
+      const tags = (tagsString as string).split(',').map(t => t.trim()).filter(t => t.length > 0);
 
       const response = await fetch(`${API_BASE}/blog/${form._id}`, {
         method: 'PATCH',
@@ -119,15 +190,18 @@ export default function EditBlogPostPage() {
           tags,
           imageUrl: form.imageUrl,
           published: form.published,
+          media: form.media,
         }),
         credentials: 'include',
       });
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.message || 'Erreur lors de la mise à jour');
+        const data = await response.json().catch(() => ({}));
+        console.error('[BlogEdit] Response error:', response.status, data);
+        throw new Error(data.message || `Erreur serveur (${response.status})`);
       }
 
+      console.log('[BlogEdit] Success! Redirecting...');
       // Success - redirect to blog management
       router.push('/admin/blog');
     } catch (err) {
@@ -214,17 +288,88 @@ export default function EditBlogPostPage() {
 
           {/* Content */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Contenu *
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                Contenu *
+              </label>
+              <div className="relative">
+                <input
+                  type="file"
+                  accept=".md"
+                  onChange={handleMarkdownImport}
+                  className="absolute inset-0 opacity-0 cursor-pointer"
+                  id="markdown-import"
+                />
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="flex items-center gap-2"
+                >
+                  <FileUp size={16} />
+                  Importer .md
+                </Button>
+              </div>
+            </div>
             <textarea
               name="content"
               value={form.content}
               onChange={handleChange}
+              placeholder="Contenu complet de l'article (supports Markdown)"
               rows={12}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
               required
             />
+            <p className="text-xs text-gray-500 mt-1">Vous pouvez utiliser Markdown pour formater</p>
+          </div>
+
+          {/* Media Upload */}
+          <div className="space-y-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Médias associés (Images, Vidéos, Audios - Max 10MB)
+            </label>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              {(form.media || []).map((item, index) => (
+                <div key={index} className="relative group border rounded-lg overflow-hidden bg-gray-50 aspect-video flex items-center justify-center">
+                  {item.type.startsWith('image/') ? (
+                    <img src={item.url} alt={item.name} className="w-full h-full object-cover" />
+                  ) : item.type.startsWith('video/') ? (
+                    <Film size={32} className="text-blue-500" />
+                  ) : (
+                    <Music size={32} className="text-purple-500" />
+                  )}
+
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                    <button
+                      type="button"
+                      onClick={() => removeMedia(index)}
+                      className="p-1.5 bg-red-600 text-white rounded-full hover:bg-red-700 transition"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                  <div className="absolute bottom-0 left-0 right-0 bg-white/80 px-2 py-1 text-[10px] truncate">
+                    {item.name}
+                  </div>
+                </div>
+              ))}
+
+              <label className={`border-2 border-dashed rounded-lg aspect-video flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-gray-50 transition ${uploadingMedia ? 'opacity-50 pointer-events-none' : ''}`}>
+                <input
+                  type="file"
+                  onChange={handleMediaUpload}
+                  className="hidden"
+                  accept="image/*,video/*,audio/*"
+                />
+                <div className="p-2 bg-blue-50 text-blue-600 rounded-full">
+                  <FileUp size={24} />
+                </div>
+                <span className="text-xs font-medium text-gray-600">
+                  {uploadingMedia ? 'Upload...' : 'Ajouter un média'}
+                </span>
+              </label>
+            </div>
           </div>
 
           {/* Author */}

@@ -1,7 +1,3 @@
-# Guide Complet d'Utilisation d'AutoDrive
-
-Bienvenue sur AutoDrive, votre plateforme de location de véhicules au Togo ! Ce guide vous aidera à naviguer et utiliser toutes les fonctionnalités disponibles selon votre profil.
-
 ## Table des matières
 
 1. [Pour les Visiteurs Non Authentifiés](#pour-les-visiteurs)

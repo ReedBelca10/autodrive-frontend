@@ -15,6 +15,7 @@ interface BlogPost {
   tags: string[];
   publishedAt: string;
   views: number;
+  media?: { url: string; type: string; name: string }[];
 }
 
 export default function BlogPage() {
@@ -91,11 +92,10 @@ export default function BlogPage() {
                 setSelectedCategory(null);
                 setPage(1);
               }}
-              className={`px-4 py-2 rounded-full font-medium transition ${
-                selectedCategory === null
-                  ? 'bg-orange-600 text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:border-orange-600'
-              }`}
+              className={`px-4 py-2 rounded-full font-medium transition ${selectedCategory === null
+                ? 'bg-orange-600 text-white'
+                : 'bg-white text-gray-700 border border-gray-300 hover:border-orange-600'
+                }`}
             >
               Tous
             </button>
@@ -106,11 +106,10 @@ export default function BlogPage() {
                   setSelectedCategory(cat);
                   setPage(1);
                 }}
-                className={`px-4 py-2 rounded-full font-medium transition capitalize ${
-                  selectedCategory === cat
-                    ? 'bg-orange-600 text-white'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:border-orange-600'
-                }`}
+                className={`px-4 py-2 rounded-full font-medium transition capitalize ${selectedCategory === cat
+                  ? 'bg-orange-600 text-white'
+                  : 'bg-white text-gray-700 border border-gray-300 hover:border-orange-600'
+                  }`}
               >
                 {cat}
               </button>
@@ -137,20 +136,27 @@ export default function BlogPage() {
                   className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition cursor-pointer group"
                 >
                   {/* Image */}
-                  {post.imageUrl && (
-                    <div className="relative h-48 bg-gray-200 overflow-hidden">
-                      <img
-                        src={post.imageUrl}
-                        alt={post.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition"
-                      />
-                      <div className="absolute top-3 right-3">
-                        <span className="bg-orange-600 text-white text-xs px-3 py-1 rounded-full capitalize">
-                          {post.category}
-                        </span>
+                  {(() => {
+                    const firstMediaImage = post.media?.find(m => m.type.startsWith('image/'))?.url;
+                    const displayImage = (post.imageUrl === '/assets/blog-default.jpg' && firstMediaImage)
+                      ? firstMediaImage
+                      : (post.imageUrl || '/assets/blog-default.jpg');
+
+                    return (
+                      <div className="relative h-48 bg-gray-200 overflow-hidden">
+                        <img
+                          src={displayImage}
+                          alt={post.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition"
+                        />
+                        <div className="absolute top-3 right-3">
+                          <span className="bg-orange-600 text-white text-xs px-3 py-1 rounded-full capitalize">
+                            {post.category}
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    );
+                  })()}
 
                   {/* Contenu */}
                   <div className="p-6">
@@ -217,11 +223,10 @@ export default function BlogPage() {
                   <button
                     key={p}
                     onClick={() => setPage(p)}
-                    className={`px-4 py-2 rounded-lg font-medium transition ${
-                      p === page
-                        ? 'bg-orange-600 text-white'
-                        : 'border border-gray-300 hover:border-orange-600'
-                    }`}
+                    className={`px-4 py-2 rounded-lg font-medium transition ${p === page
+                      ? 'bg-orange-600 text-white'
+                      : 'border border-gray-300 hover:border-orange-600'
+                      }`}
                   >
                     {p}
                   </button>
