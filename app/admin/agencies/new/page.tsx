@@ -44,7 +44,9 @@ export default function AgencyFormPage() {
         const citiesRes = await fetch(`${API_BASE}/agencies/config/cities`);
         if (citiesRes.ok) {
           const citiesData = await citiesRes.json();
-          setCities(citiesData.cities || []);
+          // Dédupliquer et trier les villes
+          const uniqueCities = Array.from(new Set(citiesData.cities || [])).sort() as string[];
+          setCities(uniqueCities);
         }
 
         // Charger les managers
@@ -176,8 +178,8 @@ export default function AgencyFormPage() {
               className="w-full px-4 py-2 rounded bg-gray-700 border border-gray-600 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
               <option value="">Sélectionner une ville</option>
-              {cities.map((city) => (
-                <option key={city} value={city}>
+              {cities.map((city, index) => (
+                <option key={`city-${index}`} value={city}>
                   {city}
                 </option>
               ))}
