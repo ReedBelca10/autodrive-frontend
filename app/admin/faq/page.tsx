@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 import { Edit, Trash2, Plus, Eye, EyeOff, AlertCircle, GripVertical } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Faq {
     _id: string;
@@ -48,8 +49,15 @@ export default function FaqManagementPage() {
         fetchFaqs();
     }, []);
 
-    const handleDelete = async (id: string) => {
-        if (!confirm('Êtes-vous sûr de vouloir supprimer cette question ?')) {
+    const handleDelete = async (id: string, skipConfirm = false) => {
+        if (!skipConfirm) {
+            toast("Confirmation de suppression", {
+                description: "Êtes-vous sûr de vouloir supprimer cette question ?",
+                action: {
+                    label: "Supprimer",
+                    onClick: () => handleDelete(id, true),
+                },
+            });
             return;
         }
 
@@ -64,8 +72,9 @@ export default function FaqManagementPage() {
             }
 
             setFaqs(faqs.filter(faq => faq._id !== id));
+            toast.success('Question supprimée de la FAQ');
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+            toast.error(err instanceof Error ? err.message : 'Erreur lors de la suppression');
         }
     };
 
@@ -85,8 +94,9 @@ export default function FaqManagementPage() {
             setFaqs(faqs.map(faq =>
                 faq._id === id ? { ...faq, published: !currentStatus } : faq
             ));
+            toast.success(currentStatus ? 'Question masquée' : 'Question publiée');
         } catch (err) {
-            alert(err instanceof Error ? err.message : 'Erreur lors de la mise à jour');
+            toast.error(err instanceof Error ? err.message : 'Erreur lors de la mise à jour');
         }
     };
 
@@ -160,8 +170,8 @@ export default function FaqManagementPage() {
                                             <button
                                                 onClick={() => handleTogglePublish(faq._id, faq.published)}
                                                 className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold transition-all ${faq.published
-                                                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                                                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                    ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                                                    : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
                                                     }`}
                                             >
                                                 {faq.published ? (

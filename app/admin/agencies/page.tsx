@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Plus, Edit2, Trash2, MapPin, Check, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Agency {
   _id: string;
@@ -52,8 +53,17 @@ export default function AgenciesPage() {
     fetchAgencies();
   }, [API_BASE]);
 
-  const deleteAgency = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette agence ?')) return;
+  const deleteAgency = async (id: string, skipConfirm = false) => {
+    if (!skipConfirm) {
+      toast("Confirmation de suppression", {
+        description: "Êtes-vous sûr de vouloir supprimer cette agence ?",
+        action: {
+          label: "Supprimer",
+          onClick: () => deleteAgency(id, true),
+        },
+      });
+      return;
+    }
 
     try {
       const response = await fetch(`${API_BASE}/agencies/${id}`, {
@@ -63,11 +73,12 @@ export default function AgenciesPage() {
 
       if (response.ok) {
         setAgencies(agencies.filter(a => a._id !== id));
+        toast.success('Agence supprimée avec succès');
       } else {
-        setError('Erreur lors de la suppression');
+        toast.error('Erreur lors de la suppression');
       }
     } catch (err) {
-      setError('Erreur réseau');
+      toast.error('Erreur réseau');
       console.error(err);
     }
   };
@@ -82,11 +93,12 @@ export default function AgenciesPage() {
       if (response.ok) {
         const updatedAgency = await response.json();
         setAgencies(agencies.map(a => a._id === id ? { ...a, isActive: updatedAgency.isActive } : a));
+        toast.success(`Statut de l'agence ${updatedAgency.name} mis à jour`);
       } else {
-        alert('Erreur lors de la modification du statut');
+        toast.error('Erreur lors de la modification du statut');
       }
     } catch (err) {
-      alert('Erreur réseau');
+      toast.error('Erreur réseau');
       console.error(err);
     }
   };
@@ -152,11 +164,10 @@ export default function AgenciesPage() {
               </thead>
               <tbody className="divide-y divide-gray-700/50">
                 {agencies.map((agency, index) => (
-                  <tr 
-                    key={agency._id} 
-                    className={`transition-all duration-200 ${
-                      index % 2 === 0 ? 'bg-gray-800/30' : 'bg-gray-800/60'
-                    } hover:bg-gradient-to-r hover:from-emerald-900/40 hover:to-gray-800/40`}
+                  <tr
+                    key={agency._id}
+                    className={`transition-all duration-200 ${index % 2 === 0 ? 'bg-gray-800/30' : 'bg-gray-800/60'
+                      } hover:bg-gradient-to-r hover:from-emerald-900/40 hover:to-gray-800/40`}
                   >
                     <td className="px-6 py-4 text-sm font-semibold text-gray-100">{agency.name}</td>
                     <td className="px-6 py-4 text-sm text-gray-300">{agency.city}</td>
@@ -172,11 +183,10 @@ export default function AgenciesPage() {
                     <td className="px-6 py-4">
                       <button
                         onClick={() => toggleAgencyStatus(agency._id)}
-                        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 ${
-                          agency.isActive 
-                            ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white' 
-                            : 'bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-gray-300'
-                        }`}
+                        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 ${agency.isActive
+                          ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white'
+                          : 'bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-gray-300'
+                          }`}
                       >
                         {agency.isActive ? <Check size={16} /> : <X size={16} />}
                         {agency.isActive ? 'Actif' : 'Inactif'}
@@ -193,9 +203,9 @@ export default function AgenciesPage() {
                         <MapPin size={16} />
                       </a>
                       <Link href={`/admin/agencies/${agency._id}`}>
-                        <Button 
+                        <Button
                           variant="ghost"
-                          size="sm" 
+                          size="sm"
                           className="hover:bg-blue-900/60 hover:text-blue-300 text-gray-400 transition-all duration-200 hover:shadow-lg flex items-center gap-1"
                         >
                           <Edit2 size={16} />

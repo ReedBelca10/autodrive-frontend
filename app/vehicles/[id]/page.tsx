@@ -7,8 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { VehicleImage } from '@/components/VehicleImage';
 // Navbar and Footer provided by root layout
-import { Star, Users, Gauge, Zap, Calendar, ChevronLeft, MapPin, Fuel, Settings } from 'lucide-react';
+import { Star, Users, Gauge, Zap, Calendar, ChevronLeft, MapPin, Fuel, Settings, AlertCircle } from 'lucide-react';
 import { useState, useEffect, use } from 'react';
+import { toast } from 'sonner';
 
 interface Vehicle {
   _id: string;
@@ -120,8 +121,8 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
     );
   }
 
-  const mainImage = vehicle.mediaUrls && vehicle.mediaUrls.length > 0 
-    ? vehicle.mediaUrls[selectedImageIndex] 
+  const mainImage = vehicle.mediaUrls && vehicle.mediaUrls.length > 0
+    ? vehicle.mediaUrls[selectedImageIndex]
     : undefined;
 
   const rating = vehicle.reviews?.averageRating || 0;
@@ -161,11 +162,10 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                     <button
                       key={idx}
                       onClick={() => setSelectedImageIndex(idx)}
-                      className={`relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden transition-all cursor-pointer border-2 ${
-                        selectedImageIndex === idx 
-                          ? 'border-blue-600 ring-2 ring-blue-400 ring-offset-1' 
+                      className={`relative w-full aspect-square bg-gray-100 rounded-lg overflow-hidden transition-all cursor-pointer border-2 ${selectedImageIndex === idx
+                          ? 'border-blue-600 ring-2 ring-blue-400 ring-offset-1'
                           : 'border-gray-200 opacity-75 hover:opacity-100'
-                      }`}
+                        }`}
                       aria-label={`Photo ${idx + 1}`}
                     >
                       <VehicleImage
@@ -195,21 +195,20 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
                   {vehicle.bodyType}
                 </span>
                 {/* Badge de statut */}
-                <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold text-white ${
-                  vehicle.status === 'available' 
-                    ? 'bg-green-500' 
+                <span className={`inline-block px-3 py-1 rounded-full text-sm font-bold text-white shadow-sm flex items-center gap-1.5 ${vehicle.status === 'available' || !vehicle.status
+                    ? 'bg-green-500'
                     : vehicle.status === 'reserved'
-                    ? 'bg-orange-500'
-                    : 'bg-red-500'
-                }`}>
-                  {vehicle.status === 'available' && '✓ Disponible'}
-                  {vehicle.status === 'reserved' && '⊗ Réservé'}
-                  {vehicle.status === 'maintenance' && '⚙ Maintenance'}
-                  {!vehicle.status && '✓ Disponible'}
+                      ? 'bg-orange-500'
+                      : 'bg-red-500'
+                  }`}>
+                  {vehicle.status === 'available' && '✓ Disponible immédiatement'}
+                  {vehicle.status === 'reserved' && '⊗ Actuellement en voyage'}
+                  {vehicle.status === 'maintenance' && '⚙ En révision sécurité'}
+                  {!vehicle.status && '✓ Disponible immédiatement'}
                 </span>
               </div>
               <h1 className="text-4xl font-bold text-gray-900 mb-3">{vehicle.name}</h1>
-              
+
               {/* Évaluation */}
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
@@ -313,21 +312,34 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
 
             {/* Description */}
             {vehicle.description && (
-              <div className="mb-6 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100">
-                <p className="text-gray-700 leading-relaxed">{vehicle.description}</p>
+              <div className="mb-6 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100 italic">
+                <p className="text-gray-700 leading-relaxed">"{vehicle.description}"</p>
               </div>
             )}
 
             {/* Réservation */}
             <div className="space-y-3">
-              <Link href={`/reservation?vehicleId=${vehicle._id}`} className="block">
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 text-lg font-bold rounded-lg transition-all">
-                  Réserver ce véhicule
-                </Button>
-              </Link>
-              <Button 
-                variant="outline" 
-                className="w-full border-blue-600 text-blue-600 hover:bg-blue-50 py-3 rounded-lg transition-all"
+              {vehicle.status === 'available' || !vehicle.status ? (
+                <Link href={`/reservation?vehicleId=${vehicle._id}`} className="block">
+                  <Button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-6 text-xl font-bold rounded-xl shadow-lg hover:shadow-blue-200 transition-all">
+                    Réserver ce véhicule
+                  </Button>
+                </Link>
+              ) : (
+                <div className="p-4 bg-gray-50 border border-gray-200 rounded-xl text-center">
+                  <AlertCircle className="mx-auto text-gray-400 mb-2" size={32} />
+                  <p className="text-gray-600 font-medium">
+                    {vehicle.status === 'reserved'
+                      ? "Ce véhicule est actuellement réservé par un autre client. Il sera bientôt de retour !"
+                      : "Ce véhicule est en cours de maintenance pour garantir votre sécurité. Revenez plus tard !"}
+                  </p>
+                </div>
+              )}
+
+              <Button
+                variant="outline"
+                onClick={() => toast.success('Véhicule ajouté à vos favoris !')}
+                className="w-full border-2 border-blue-600 text-blue-600 hover:bg-blue-50 py-4 rounded-xl font-bold transition-all"
               >
                 Ajouter aux favoris
               </Button>

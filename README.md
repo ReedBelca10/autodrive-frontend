@@ -32,9 +32,10 @@
 - ✅ Dashboard admin complet
 - ✅ Dashboard manager avec gestion véhicules
 - ✅ Profil utilisateur
-- ✅ Blog avec articles
+- ✅ Gestion du blog
 - ✅ FAQ (Page publique + Admin)
 - ✅ Newsletter (Inscription + Admin)
+- ✅ Centre de notifications avec messagerie (Chat)
 - ✅ Formulaire de contact
 - ✅ Responsif sur tous les appareils
 

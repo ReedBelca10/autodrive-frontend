@@ -13,6 +13,7 @@ import {
   MoreVertical,
   Check,
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Reservation {
   _id: string;
@@ -128,16 +129,24 @@ export default function ReservationsPage() {
         setReservations(reservations.map(r =>
           r._id === id ? { ...r, status: 'confirmed' } : r
         ));
-        setSuccessMessage('Réservation confirmée avec succès');
-        setTimeout(() => setSuccessMessage(''), 3000);
+        toast.success('Réservation confirmée avec succès');
       }
     } catch (err) {
       setError('Erreur lors de la confirmation');
     }
   };
 
-  const cancelReservation = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir annuler cette réservation ?')) return;
+  const cancelReservation = async (id: string, skipConfirm = false) => {
+    if (!skipConfirm) {
+      toast("Confirmation d'annulation", {
+        description: "Êtes-vous sûr de vouloir annuler cette réservation ?",
+        action: {
+          label: "Annuler",
+          onClick: () => cancelReservation(id, true),
+        },
+      });
+      return;
+    }
 
     try {
       const response = await fetch(`${API_BASE}/reservations/${id}`, {
@@ -149,8 +158,7 @@ export default function ReservationsPage() {
         setReservations(reservations.map(r =>
           r._id === id ? { ...r, status: 'cancelled' } : r
         ));
-        setSuccessMessage('Réservation annulée');
-        setTimeout(() => setSuccessMessage(''), 3000);
+        toast.success('Réservation annulée');
       }
     } catch (err) {
       setError('Erreur lors de l\'annulation');

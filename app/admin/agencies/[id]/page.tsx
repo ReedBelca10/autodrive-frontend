@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 import { Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Manager {
   _id: string;
@@ -125,8 +126,15 @@ export default function AgencyEditPage() {
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cette agence ?')) {
+  const handleDelete = async (skipConfirm = false) => {
+    if (!skipConfirm) {
+      toast("Confirmation de suppression", {
+        description: "Êtes-vous sûr de vouloir supprimer cette agence ?",
+        action: {
+          label: "Supprimer",
+          onClick: () => handleDelete(true),
+        },
+      });
       return;
     }
 
@@ -141,9 +149,9 @@ export default function AgencyEditPage() {
       } else {
         setError('Erreur lors de la suppression');
       }
-} catch (err: unknown) {
-        const errorMessage = err instanceof Error ? err.message : 'Erreur réseau';
-        setError(errorMessage);
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Erreur réseau';
+      setError(errorMessage);
     }
   };
 
@@ -309,7 +317,7 @@ export default function AgencyEditPage() {
             <Button
               type="button"
               variant="destructive"
-              onClick={handleDelete}
+              onClick={() => handleDelete()}
               className="flex items-center gap-2"
             >
               <Trash2 size={16} />

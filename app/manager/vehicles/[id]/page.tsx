@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Upload, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface VehicleForm {
   name: string;
@@ -113,7 +114,7 @@ export default function EditManagerVehiclePage() {
 
       if (response.ok) {
         const data = await response.json();
-        
+
         // Vérifier que ce véhicule appartient au manager
         if (data.agencyId._id !== managerAgencyId && data.agencyId !== managerAgencyId) {
           setError('Accès refusé: Ce véhicule n\'appartient pas à votre agence');
@@ -255,8 +256,17 @@ export default function EditManagerVehiclePage() {
     }
   };
 
-  const deleteVehicle = async () => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) return;
+  const deleteVehicle = async (skipConfirm = false) => {
+    if (!skipConfirm) {
+      toast("Confirmation de suppression", {
+        description: "Êtes-vous sûr de vouloir supprimer ce véhicule ?",
+        action: {
+          label: "Supprimer",
+          onClick: () => deleteVehicle(true),
+        },
+      });
+      return;
+    }
 
     try {
       const response = await fetch(`${API_BASE}/vehicles/${vehicleId}`, {
@@ -538,7 +548,7 @@ export default function EditManagerVehiclePage() {
             <Button
               type="button"
               variant="destructive"
-              onClick={deleteVehicle}
+              onClick={() => deleteVehicle()}
             >
               Supprimer
             </Button>

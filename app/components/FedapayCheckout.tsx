@@ -1,21 +1,63 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
 
 interface FedapayCheckoutProps {
     paymentUrl: string;
+    reservationId: string;
     onSuccess: () => void;
     onError: (error: string) => void;
 }
 
-export function FedapayCheckout({ paymentUrl, onSuccess, onError }: FedapayCheckoutProps) {
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
+
+export function FedapayCheckout({ paymentUrl, reservationId, onSuccess, onError }: FedapayCheckoutProps) {
+    const [isChecking, setIsChecking] = useState(false);
+
     useEffect(() => {
-        // Redirect to FedaPay payment page
+        // Rediriger vers la page de paiement FedaPay dans un nouvel onglet
         if (paymentUrl) {
-            window.location.href = paymentUrl;
+            const width = 600;
+            const height = 800;
+            const left = window.innerWidth / 2 - width / 2;
+            const top = window.innerHeight / 2 - height / 2;
+
+            window.open(
+                paymentUrl,
+                'FedapayPayment',
+                `width=${width},height=${height},left=${left},top=${top},scrollbars=yes`
+            );
         }
     }, [paymentUrl]);
+
+    useEffect(() => {
+        if (!reservationId) return;
+
+        // Polling loop to check payment status
+        const interval = setInterval(async () => {
+            try {
+                setIsChecking(true);
+                const response = await fetch(`${API_BASE_URL}/reservations/${reservationId}/fedapay-status`, {
+                    credentials: 'include'
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.paymentStatus === 'paid' || data.transactionStatus === 'approved') {
+                        clearInterval(interval);
+                        onSuccess();
+                    }
+                }
+            } catch (error) {
+                console.error('Erreur lors de la vérification du statut:', error);
+            } finally {
+                setIsChecking(false);
+            }
+        }, 3000); // Check every 3 seconds
+
+        return () => clearInterval(interval);
+    }, [reservationId, onSuccess]);
 
     return (
         <div className="space-y-6">
@@ -27,7 +69,17 @@ export function FedapayCheckout({ paymentUrl, onSuccess, onError }: FedapayCheck
                 <p className="text-gray-600">
                     Vous allez être redirigé vers la page de paiement sécurisée FedaPay...
                 </p>
+                {isChecking && (
+                    <p className="text-xs text-blue-500 mt-2">Vérification du statut en arrière-plan...</p>
+                )}
             </div>
+
+            <Button
+                onClick={() => window.open(paymentUrl, 'FedapayPayment', 'width=600,height=800')}
+                className="w-full bg-blue-600 hover:bg-blue-700 font-bold"
+            >
+                Ouvrir la fenêtre de paiement
+            </Button>
 
             <div className="text-sm text-gray-500 space-y-2">
                 <p className="flex items-center gap-2">
@@ -43,6 +95,10 @@ export function FedapayCheckout({ paymentUrl, onSuccess, onError }: FedapayCheck
                     Supports tous les opérateurs (Moov, Orange, MTN, Wave)
                 </p>
             </div>
+
+            <p className="text-xs text-center text-gray-400">
+                Une fois le paiement effectué, cette page se mettra à jour automatiquement.
+            </p>
 
             {!paymentUrl && (
                 <Button

@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Trash2, CheckCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface ContactMessage {
   _id: string;
@@ -56,8 +57,17 @@ export default function MessagesPage() {
     }
   };
 
-  const deleteMessage = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce message ?')) return;
+  const deleteMessage = async (id: string, skipConfirm = false) => {
+    if (!skipConfirm) {
+      toast("Confirmation de suppression", {
+        description: "Êtes-vous sûr de vouloir supprimer ce message ?",
+        action: {
+          label: "Supprimer",
+          onClick: () => deleteMessage(id, true),
+        },
+      });
+      return;
+    }
 
     try {
       const response = await fetch(`${API_BASE}/contact/${id}`, {
@@ -94,9 +104,8 @@ export default function MessagesPage() {
         {messages.map((msg) => (
           <Card
             key={msg._id}
-            className={`bg-gray-800 border-gray-700 p-4 ${
-              !msg.read ? 'border-blue-500' : ''
-            }`}
+            className={`bg-gray-800 border-gray-700 p-4 ${!msg.read ? 'border-blue-500' : ''
+              }`}
           >
             <div className="flex justify-between items-start gap-4">
               <div className="flex-1">

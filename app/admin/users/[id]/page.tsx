@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 import { Trash2 } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface User {
   _id: string;
@@ -104,8 +105,15 @@ export default function EditUserPage() {
     }
   };
 
-  const handleDelete = async () => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) {
+  const handleDelete = async (skipConfirm = false) => {
+    if (!skipConfirm) {
+      toast("Confirmation de suppression", {
+        description: "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
+        action: {
+          label: "Supprimer",
+          onClick: () => handleDelete(true),
+        },
+      });
       return;
     }
 
@@ -232,7 +240,7 @@ export default function EditUserPage() {
             <Button
               type="button"
               variant="destructive"
-              onClick={handleDelete}
+              onClick={() => handleDelete()}
               className="flex items-center gap-2"
             >
               <Trash2 size={16} />

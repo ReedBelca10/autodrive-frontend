@@ -1,6 +1,7 @@
 import './globals.css';
 import Navbar from '@/app/components/Navbar';
 import Footer from '@/app/components/Footer';
+import { Toaster } from 'sonner';
 
 export const metadata = {
   title: 'AutoDrive',
@@ -12,6 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     <html lang="fr">
       <body className="antialiased bg-white text-gray-900">
         <div className="min-h-screen flex flex-col">
+          <Toaster position="top-right" richColors />
           <Navbar />
           <main className="flex-1">{children}</main>
           <Footer />

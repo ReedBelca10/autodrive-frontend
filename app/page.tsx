@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { toast } from 'sonner';
 // Navbar and Footer are provided by the root layout
 import { MapPin, Calendar, CheckCircle, CalendarDays, Car, Shield, Users, Star, Fuel, Settings, ArrowRight } from 'lucide-react';
 import { useState, useEffect } from 'react';
@@ -173,15 +174,15 @@ export default function Home() {
 
     // Validation
     if (!searchData.startDate || !searchData.returnDate) {
-      alert('Veuillez sélectionner les dates de départ et de retour');
+      toast.warning('Veuillez sélectionner les dates de départ et de retour');
       return;
     }
 
     const start = new Date(`${searchData.startDate}T${searchData.startTime}`);
     const end = new Date(`${searchData.returnDate}T${searchData.returnTime}`);
 
-    if (start >= end) {
-      alert('La date de retour doit être après la date de départ');
+    if (new Date(searchData.returnDate) <= new Date(searchData.startDate)) {
+      toast.warning('La date de retour doit être après la date de départ');
       return;
     }
 
@@ -208,7 +209,7 @@ export default function Home() {
     setSubscriptionStatus(null);
 
     try {
-      const response = await fetch(`${API_BASE_URL}/newsletter/subscribe`, {
+      const res = await fetch(`${API_BASE_URL}/newsletter/subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -216,16 +217,19 @@ export default function Home() {
         body: JSON.stringify({ email: newsletterEmail }),
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setSubscriptionStatus({ type: 'success', message: 'Merci de vous être abonné !' });
+      if (res.ok) {
+        setSubscriptionStatus({ type: 'success', message: "C'est fait ! Vous êtes maintenant inscrit à notre newsletter." });
         setNewsletterEmail('');
+        toast.success("C'est fait ! Vous êtes maintenant inscrit à notre newsletter.");
       } else {
-        setSubscriptionStatus({ type: 'error', message: data.message || "Une erreur est survenue lors de l'inscription." });
+        const data = await res.json();
+        toast.error(data.message || "Oups... Nous n'avons pas pu valider votre inscription.");
+        setSubscriptionStatus({ type: 'error', message: data.message || "Oups... Nous n'avons pas pu valider votre inscription." });
       }
-    } catch (error) {
-      setSubscriptionStatus({ type: 'error', message: "Impossible de contacter le serveur. Veuillez réessayer plus tard." });
+    } catch (err) {
+      console.error('Newsletter error:', err);
+      toast.error("Petit problème technique... Réessayez dans un instant !");
+      setSubscriptionStatus({ type: 'error', message: "Petit problème technique... Réessayez dans un instant !" });
     } finally {
       setSubscribing(false);
     }

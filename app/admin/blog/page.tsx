@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 import { Edit, Trash2, Plus, Eye, EyeOff, AlertCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface BlogPost {
   _id: string;
@@ -55,8 +56,15 @@ export default function BlogManagementPage() {
   }, []);
 
   // Delete a post
-  const handleDelete = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet article?')) {
+  const handleDelete = async (id: string, skipConfirm = false) => {
+    if (!skipConfirm) {
+      toast("Confirmation de suppression", {
+        description: "Êtes-vous sûr de vouloir supprimer cet article ?",
+        action: {
+          label: "Supprimer",
+          onClick: () => handleDelete(id, true),
+        },
+      });
       return;
     }
 
@@ -71,8 +79,9 @@ export default function BlogManagementPage() {
       }
 
       setPosts(posts.filter(post => post._id !== id));
+      toast.success('Article supprimé avec succès');
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erreur lors de la suppression');
+      toast.error(err instanceof Error ? err.message : 'Erreur lors de la suppression');
     }
   };
 
@@ -93,8 +102,9 @@ export default function BlogManagementPage() {
       setPosts(posts.map(post =>
         post._id === id ? { ...post, published: !currentStatus } : post
       ));
+      toast.success(currentStatus ? 'Article archivé' : 'Article publié');
     } catch (err) {
-      alert(err instanceof Error ? err.message : 'Erreur lors de la mise à jour');
+      toast.error(err instanceof Error ? err.message : 'Erreur lors de la mise à jour');
     }
   };
 
@@ -170,11 +180,10 @@ export default function BlogManagementPage() {
                   <td className="px-6 py-4">
                     <button
                       onClick={() => handleTogglePublish(post._id, post.published)}
-                      className={`flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition ${
-                        post.published
-                          ? 'bg-green-100 text-green-700 hover:bg-green-200'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-                      }`}
+                      className={`flex items-center gap-2 px-3 py-1 rounded-lg text-sm font-medium transition ${post.published
+                        ? 'bg-green-100 text-green-700 hover:bg-green-200'
+                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        }`}
                     >
                       {post.published ? (
                         <>

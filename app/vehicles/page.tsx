@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { VehicleImage } from '@/components/VehicleImage';
+import { toast } from 'sonner';
 // Navbar and Footer are provided by the root layout
 import { useSearchParams } from 'next/navigation';
 import { useState, useMemo, useEffect } from 'react';
@@ -141,7 +142,7 @@ export default function VehiclesPage() {
       });
 
       if (response.status === 401) {
-        alert('Veuillez vous connecter pour ajouter des favoris');
+        toast.error('Veuillez vous connecter pour ajouter des favoris');
         return;
       }
 
@@ -150,15 +151,17 @@ export default function VehiclesPage() {
           const newFavs = new Set(prev);
           if (isFavorite) {
             newFavs.delete(vehicleId);
+            toast.success('Retiré des favoris');
           } else {
             newFavs.add(vehicleId);
+            toast.success('Ajouté aux favoris');
           }
           return newFavs;
         });
       }
     } catch (err) {
       console.error('Erreur:', err);
-      alert('Erreur lors de la mise à jour des favoris');
+      toast.error('Erreur lors de la mise à jour des favoris');
     } finally {
       setLoadingFavorites(prev => {
         const newSet = new Set(prev);
@@ -500,8 +503,8 @@ export default function VehiclesPage() {
                         <Star
                           size={20}
                           className={`${favorites.has(vehicle._id)
-                              ? 'fill-yellow-500 text-yellow-500'
-                              : 'text-gray-400 hover:text-yellow-400'
+                            ? 'fill-yellow-500 text-yellow-500'
+                            : 'text-gray-400 hover:text-yellow-400'
                             } transition-colors`}
                         />
                       </button>
@@ -526,15 +529,15 @@ export default function VehiclesPage() {
                               </div>
                             )}
                             {/* Badge Statut */}
-                            <div className={`absolute top-4 left-4 px-4 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 ${vehicle.status === 'available'
-                                ? 'bg-green-500 text-white'
-                                : vehicle.status === 'reserved'
-                                  ? 'bg-orange-500 text-white'
-                                  : 'bg-red-500 text-white'
+                            <div className={`absolute top-4 left-4 px-4 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 ${vehicle.status === 'available' || !vehicle.status
+                              ? 'bg-green-500 text-white'
+                              : vehicle.status === 'reserved'
+                                ? 'bg-orange-500 text-white'
+                                : 'bg-red-500 text-white'
                               }`}>
                               {vehicle.status === 'available' && '✓ Disponible'}
-                              {vehicle.status === 'reserved' && '⊗ Réservé'}
-                              {vehicle.status === 'maintenance' && '⚙ Maintenance'}
+                              {vehicle.status === 'reserved' && '⊗ Déjà réservé'}
+                              {vehicle.status === 'maintenance' && '⚙ En révision'}
                               {!vehicle.status && '✓ Disponible'}
                             </div>
                             {/* Badge Prix */}
@@ -610,15 +613,18 @@ export default function VehiclesPage() {
 
                             {/* Bouton Action */}
                             <div className="mt-auto pt-4 border-t border-gray-200">
-                              <Button 
+                              <Button
                                 disabled={vehicle.status === 'reserved' || vehicle.status === 'maintenance'}
-                                className={`w-full font-semibold py-2 rounded-lg transition-all ${
-                                  vehicle.status === 'reserved' || vehicle.status === 'maintenance'
-                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                className={`w-full font-semibold py-2 rounded-lg transition-all ${vehicle.status === 'reserved' || vehicle.status === 'maintenance'
+                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed border border-gray-200'
                                     : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white'
-                                }`}
+                                  }`}
                               >
-                                {vehicle.status === 'reserved' ? '⊗ Véhicule réservé' : vehicle.status === 'maintenance' ? '⚙ En maintenance' : 'Voir détails & réserver'}
+                                {vehicle.status === 'reserved'
+                                  ? 'Victime de son succès (Réservé)'
+                                  : vehicle.status === 'maintenance'
+                                    ? 'En soin (Maintenance)'
+                                    : 'Voir détails & réserver'}
                               </Button>
                             </div>
                           </div>

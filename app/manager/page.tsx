@@ -15,6 +15,7 @@ import {
   CheckCircle,
 } from 'lucide-react';
 import Link from 'next/link';
+import { toast } from 'sonner';
 
 interface Vehicle {
   _id: string;
@@ -43,7 +44,6 @@ export default function ManagerDashboard() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
 
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
@@ -54,7 +54,7 @@ export default function ManagerDashboard() {
   const fetchData = async () => {
     try {
       setLoading(true);
-      
+
       // Récupérer les véhicules du manager (endpoint dédié)
       const vehiclesRes = await fetch(`${API_BASE}/vehicles/manager/my-vehicles`, {
         credentials: 'include',
@@ -81,8 +81,17 @@ export default function ManagerDashboard() {
     }
   };
 
-  const handleDeleteVehicle = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) return;
+  const handleDeleteVehicle = async (id: string, skipConfirm = false) => {
+    if (!skipConfirm) {
+      toast("Confirmation de suppression", {
+        description: "Êtes-vous sûr de vouloir supprimer ce véhicule ?",
+        action: {
+          label: "Supprimer",
+          onClick: () => handleDeleteVehicle(id, true),
+        },
+      });
+      return;
+    }
 
     try {
       const response = await fetch(`${API_BASE}/vehicles/${id}`, {
@@ -92,8 +101,7 @@ export default function ManagerDashboard() {
 
       if (response.ok) {
         setVehicles(vehicles.filter(v => v._id !== id));
-        setSuccessMessage('Véhicule supprimé avec succès');
-        setTimeout(() => setSuccessMessage(''), 3000);
+        toast.success('Véhicule supprimé avec succès');
       }
     } catch (err) {
       setError('Erreur lors de la suppression du véhicule');
@@ -110,8 +118,7 @@ export default function ManagerDashboard() {
       if (response.ok) {
         // Retirer le véhicule de la liste au lieu de le garder
         setVehicles(vehicles.filter(v => v._id !== id));
-        setSuccessMessage('Véhicule masqué');
-        setTimeout(() => setSuccessMessage(''), 3000);
+        toast.success('Véhicule masqué');
       }
     } catch (err) {
       setError('Erreur lors de la mise à jour du statut');
@@ -127,8 +134,7 @@ export default function ManagerDashboard() {
 
       if (response.ok) {
         setReservations(reservations.map(r => r._id === id ? { ...r, status: 'confirmed' } : r));
-        setSuccessMessage('Réservation confirmée avec succès');
-        setTimeout(() => setSuccessMessage(''), 3000);
+        toast.success('Réservation confirmée avec succès');
       } else {
         setError('Erreur lors de la confirmation de la réservation');
       }
@@ -146,13 +152,12 @@ export default function ManagerDashboard() {
 
       if (response.ok) {
         setReservations(reservations.filter(r => r._id !== id));
-        setSuccessMessage('Réservation archivée avec succès');
-        setTimeout(() => setSuccessMessage(''), 3000);
+        toast.success('Réservation archivée avec succès');
       } else {
-        setError('Erreur lors de l\'archivage de la réservation');
+        setError("Erreur lors de l'archivage de la réservation");
       }
     } catch (err) {
-      setError('Erreur lors de l\'archivage de la réservation');
+      setError("Erreur lors de l'archivage de la réservation");
     }
   };
 
@@ -242,13 +247,6 @@ export default function ManagerDashboard() {
           </div>
         )}
 
-        {successMessage && (
-          <div className="mb-6 p-4 bg-green-900 border border-green-700 rounded-lg text-green-200 flex items-center gap-2">
-            <CheckCircle size={18} />
-            {successMessage}
-          </div>
-        )}
-
         {/* Stats Overview */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Card className="bg-gray-800 border-gray-700 p-4">
@@ -281,11 +279,10 @@ export default function ManagerDashboard() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as any)}
-                className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${
-                  activeTab === tab.id
-                    ? 'border-blue-500 text-blue-400'
-                    : 'border-transparent text-gray-400 hover:text-gray-200'
-                }`}
+                className={`flex items-center gap-2 px-4 py-3 border-b-2 transition-colors ${activeTab === tab.id
+                  ? 'border-blue-500 text-blue-400'
+                  : 'border-transparent text-gray-400 hover:text-gray-200'
+                  }`}
               >
                 <Icon size={18} />
                 {tab.label}

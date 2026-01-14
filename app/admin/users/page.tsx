@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Plus, Edit2, Trash2, Shield, Check, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface User {
   _id: string;
@@ -45,8 +46,17 @@ export default function UsersPage() {
     fetchUsers();
   }, [API_BASE]);
 
-  const deleteUser = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer cet utilisateur ?')) return;
+  const deleteUser = async (id: string, skipConfirm = false) => {
+    if (!skipConfirm) {
+      toast("Confirmation de suppression", {
+        description: "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
+        action: {
+          label: "Supprimer",
+          onClick: () => deleteUser(id, true),
+        },
+      });
+      return;
+    }
 
     try {
       const response = await fetch(`${API_BASE}/users/${id}`, {
@@ -56,11 +66,12 @@ export default function UsersPage() {
 
       if (response.ok) {
         setUsers(users.filter(u => u._id !== id));
+        toast.success('Utilisateur supprimé avec succès');
       } else {
-        alert('Erreur lors de la suppression');
+        toast.error('Erreur lors de la suppression');
       }
     } catch (err) {
-      alert('Erreur réseau');
+      toast.error('Erreur réseau');
       console.error(err);
     }
   };
@@ -75,11 +86,12 @@ export default function UsersPage() {
       if (response.ok) {
         const updatedUser = await response.json();
         setUsers(users.map(u => u._id === id ? { ...u, isActive: updatedUser.isActive } : u));
+        toast.success(`Statut de ${updatedUser.fullName} mis à jour`);
       } else {
-        alert('Erreur lors de la modification du statut');
+        toast.error('Erreur lors de la modification du statut');
       }
     } catch (err) {
-      alert('Erreur réseau');
+      toast.error('Erreur réseau');
       console.error(err);
     }
   };
@@ -171,11 +183,10 @@ export default function UsersPage() {
               </thead>
               <tbody className="divide-y divide-gray-700/50">
                 {users.map((user, index) => (
-                  <tr 
-                    key={user._id} 
-                    className={`transition-all duration-200 ${
-                      index % 2 === 0 ? 'bg-gray-800/30' : 'bg-gray-800/60'
-                    } hover:bg-gradient-to-r hover:from-blue-900/40 hover:to-gray-800/40`}
+                  <tr
+                    key={user._id}
+                    className={`transition-all duration-200 ${index % 2 === 0 ? 'bg-gray-800/30' : 'bg-gray-800/60'
+                      } hover:bg-gradient-to-r hover:from-blue-900/40 hover:to-gray-800/40`}
                   >
                     <td className="px-6 py-4 font-semibold text-gray-100">{user.fullName}</td>
                     <td className="px-6 py-4 text-sm text-gray-300">{user.email}</td>
@@ -193,11 +204,10 @@ export default function UsersPage() {
                     <td className="px-6 py-4">
                       <button
                         onClick={() => toggleUserStatus(user._id)}
-                        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 ${
-                          user.isActive 
-                            ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white' 
-                            : 'bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-gray-300'
-                        }`}
+                        className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-semibold transition-all duration-200 ${user.isActive
+                          ? 'bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white'
+                          : 'bg-gradient-to-r from-gray-600 to-gray-700 hover:from-gray-700 hover:to-gray-800 text-gray-300'
+                          }`}
                       >
                         {user.isActive ? <Check size={16} /> : <X size={16} />}
                         {user.isActive ? 'Actif' : 'Inactif'}
@@ -206,9 +216,9 @@ export default function UsersPage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <Link href={`/admin/users/${user._id}`}>
-                          <Button 
-                            variant="ghost" 
-                            size="sm" 
+                          <Button
+                            variant="ghost"
+                            size="sm"
                             className="hover:bg-blue-900/60 hover:text-blue-300 text-gray-400 transition-all duration-200 hover:shadow-lg"
                           >
                             <Edit2 size={16} />

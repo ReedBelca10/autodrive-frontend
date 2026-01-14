@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Plus, Edit2, Trash2, Check, X } from 'lucide-react';
+import { toast } from 'sonner';
 
 interface Vehicle {
   _id: string;
@@ -60,8 +61,17 @@ export default function VehiclesPage() {
     }
   };
 
-  const deleteVehicle = async (id: string) => {
-    if (!confirm('Êtes-vous sûr de vouloir supprimer ce véhicule ?')) return;
+  const deleteVehicle = async (id: string, skipConfirm = false) => {
+    if (!skipConfirm) {
+      toast("Confirmation de suppression", {
+        description: "Êtes-vous sûr de vouloir supprimer ce véhicule ?",
+        action: {
+          label: "Supprimer",
+          onClick: () => deleteVehicle(id, true),
+        },
+      });
+      return;
+    }
 
     try {
       const response = await fetch(`${API_BASE}/vehicles/${id}`, {
@@ -160,11 +170,10 @@ export default function VehiclesPage() {
                 <td className="px-6 py-4 text-sm">
                   <button
                     onClick={() => toggleStatus(vehicle._id)}
-                    className={`inline-flex items-center gap-1 px-3 py-1 rounded-full font-medium ${
-                      vehicle.isActive
+                    className={`inline-flex items-center gap-1 px-3 py-1 rounded-full font-medium ${vehicle.isActive
                         ? 'bg-green-900/30 text-green-400'
                         : 'bg-gray-700 text-gray-400'
-                    }`}
+                      }`}
                   >
                     {vehicle.isActive ? (
                       <>

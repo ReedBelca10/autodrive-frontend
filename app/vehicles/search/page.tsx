@@ -4,7 +4,8 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { Search, Calendar, Clock, Users, Fuel, Settings, MapPin, ImageOff } from 'lucide-react';
+import { Search, Calendar, Clock, Users, Fuel, Settings, MapPin, ImageOff, Filter, Car, Star, Tag, ChevronRight, X } from 'lucide-react';
+import { toast } from 'sonner';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { VehicleImage } from '@/components/VehicleImage';
@@ -26,7 +27,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001'
 
 export default function SearchVehiclesPage() {
   const searchParams = useSearchParams();
-  
+
   // Read URL parameters
   const urlStartDate = searchParams.get('startDate') || '';
   const urlStartTime = searchParams.get('startTime') || '10:00';
@@ -58,7 +59,7 @@ export default function SearchVehiclesPage() {
             (v: Vehicle) => v.status === 'available' || !v.status
           );
           setVehicles(availableVehicles);
-          
+
           // If URL parameters are present, automatically perform search
           if (urlStartDate && urlReturnDate) {
             const filtered = availableVehicles.filter((vehicle) => {
@@ -84,7 +85,7 @@ export default function SearchVehiclesPage() {
   const handleSearch = () => {
     // Validate dates
     if (!startDate || !returnDate) {
-      alert('Veuillez sélectionner les dates de départ et de retour');
+      toast.warning('Veuillez sélectionner les dates de départ et de retour');
       return;
     }
 
@@ -92,7 +93,7 @@ export default function SearchVehiclesPage() {
     const end = new Date(`${returnDate}T${returnTime}`);
 
     if (start >= end) {
-      alert('La date de retour doit être après la date de départ');
+      toast.warning('La date de retour doit être après la date de départ');
       return;
     }
 
@@ -308,6 +309,18 @@ export default function SearchVehiclesPage() {
                           </div>
                         </div>
                       )}
+                      {/* Badge Statut */}
+                      <div className={`absolute top-4 left-4 px-4 py-2 rounded-full text-xs font-bold shadow-lg flex items-center gap-2 ${vehicle.status === 'available' || !vehicle.status
+                        ? 'bg-green-500 text-white'
+                        : vehicle.status === 'reserved'
+                          ? 'bg-orange-500 text-white'
+                          : 'bg-red-500 text-white'
+                        }`}>
+                        {vehicle.status === 'available' && '✓ Disponible'}
+                        {vehicle.status === 'reserved' && '⊗ Déjà réservé'}
+                        {vehicle.status === 'maintenance' && '⚙ En révision'}
+                        {!vehicle.status && '✓ Disponible'}
+                      </div>
                       {/* Price Badge */}
                       <div className="absolute top-4 right-4 bg-white/95 backdrop-blur-sm text-blue-600 px-4 py-2 rounded-lg text-sm font-bold shadow-lg">
                         {vehicle.dailyRate.toLocaleString()} FCFA/j

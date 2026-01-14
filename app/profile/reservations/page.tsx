@@ -14,6 +14,7 @@ import {
   XCircle,
   Loader2,
 } from "lucide-react";
+import { toast } from "sonner";
 
 interface Vehicle {
   _id: string;
@@ -95,8 +96,15 @@ export default function MyReservationsPage() {
     fetchReservations();
   }, [router]);
 
-  const handleCancelReservation = async (id: string) => {
-    if (!confirm("Êtes-vous sûr de vouloir annuler cette réservation ?")) {
+  const handleCancelReservation = async (id: string, skipConfirm = false) => {
+    if (!skipConfirm) {
+      toast("Confirmation d'annulation", {
+        description: "Êtes-vous sûr de vouloir annuler cette réservation ?",
+        action: {
+          label: "Oui, annuler",
+          onClick: () => handleCancelReservation(id, true),
+        },
+      });
       return;
     }
 
@@ -125,12 +133,11 @@ export default function MyReservationsPage() {
         )
       );
 
-      setSuccessMessage("Réservation annulée avec succès");
-      setTimeout(() => setSuccessMessage(null), 3000);
+      toast.success("Réservation annulée avec succès");
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Une erreur s'est produite"
-      );
+      const msg = err instanceof Error ? err.message : "Une erreur s'est produite";
+      toast.error(msg);
+      setError(msg);
     } finally {
       setCancellingId(null);
     }
@@ -218,13 +225,12 @@ export default function MyReservationsPage() {
                       </p>
                     </div>
                     <div
-                      className={`px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 ${
-                        reservation.status === "confirmed"
+                      className={`px-4 py-2 rounded-full text-sm font-semibold flex items-center gap-2 ${reservation.status === "confirmed"
                           ? "bg-green-100 text-green-800"
                           : reservation.status === "pending"
                             ? "bg-yellow-100 text-yellow-800"
                             : "bg-red-100 text-red-800"
-                      }`}
+                        }`}
                     >
                       {reservation.status === "confirmed" && (
                         <CheckCircle className="w-4 h-4" />
@@ -288,11 +294,10 @@ export default function MyReservationsPage() {
                         <span className="text-sm">Paiement</span>
                       </div>
                       <p
-                        className={`font-semibold ${
-                          reservation.paymentStatus === "paid"
+                        className={`font-semibold ${reservation.paymentStatus === "paid"
                             ? "text-green-600"
                             : "text-orange-600"
-                        }`}
+                          }`}
                       >
                         {reservation.paymentStatus === "paid"
                           ? "Payé"

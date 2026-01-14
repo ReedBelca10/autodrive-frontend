@@ -6,6 +6,7 @@ import { useEffect, useState, useRef } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
+import NotificationBell from './NotificationBell';
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
@@ -33,19 +34,20 @@ export default function Navbar() {
       router.push('/');
     }
   };
+
   const displayName = user?.fullName || (user?.email ? user.email.split('@')[0] : null) || 'Utilisateur';
+
   const initials = (() => {
     if (!user) return 'AD';
     if (user.fullName) {
-      return user.fullName.split(' ').map(n => n[0]).filter(Boolean).slice(0,2).join('').toUpperCase();
+      return user.fullName.split(' ').map(n => n[0]).filter(Boolean).slice(0, 2).join('').toUpperCase();
     }
-    if (user.email) return user.email.split('@')[0].slice(0,2).toUpperCase();
+    if (user.email) return user.email.split('@')[0].slice(0, 2).toUpperCase();
     return 'AD';
   })();
 
   useEffect(() => {
-    // try to fetch profile silently to display user in navbar
-    const mountedRef = { current: true } as { current: boolean };
+    const mountedRef = { current: true };
 
     async function loadProfile() {
       try {
@@ -53,7 +55,6 @@ export default function Navbar() {
         if (!mountedRef.current) return;
         if (res.ok) {
           const data = await res.json();
-          // backend returns { user: {...} } — accept either shape
           const profile = (data && (data.user || data)) as any;
           setUser(profile);
         } else {
@@ -90,7 +91,6 @@ export default function Navbar() {
     };
   }, [API_BASE]);
 
-  // Hide the navbar on the login and register pages
   if (pathname && (pathname.startsWith('/login') || pathname.startsWith('/register'))) return null;
 
   return (
@@ -110,181 +110,146 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-gray-700 hover:text-blue-600 font-medium">
-              ACCUEIL
-            </Link>
-            <Link href="/vehicles" className="text-gray-700 hover:text-blue-600 font-medium">
-              VÉHICULES
-            </Link>
-            <Link href="/promotions" className="text-gray-700 hover:text-blue-600 font-medium">
-              PROMOTIONS
-            </Link>
-            <Link href="/blog" className="text-gray-700 hover:text-blue-600 font-medium">
-              BLOG
-            </Link>
-            <Link href="/about" className="text-gray-700 hover:text-blue-600 font-medium">
-              À PROPOS
-            </Link>
-            <Link href="/contact" className="text-gray-700 hover:text-blue-600 font-medium">
-              CONTACT
-            </Link>
+            <Link href="/" className="text-gray-700 hover:text-blue-600 font-medium">ACCUEIL</Link>
+            <Link href="/vehicles" className="text-gray-700 hover:text-blue-600 font-medium">VÉHICULES</Link>
+            <Link href="/promotions" className="text-gray-700 hover:text-blue-600 font-medium">PROMOTIONS</Link>
+            <Link href="/blog" className="text-gray-700 hover:text-blue-600 font-medium">BLOG</Link>
+            <Link href="/about" className="text-gray-700 hover:text-blue-600 font-medium">À PROPOS</Link>
+            <Link href="/contact" className="text-gray-700 hover:text-blue-600 font-medium">CONTACT</Link>
           </div>
 
-          {/* Buttons */}
-          <div className="hidden md:flex items-center gap-3">
-            <Link href="/vehicles/search">
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                RÉSERVER
-              </Button>
-            </Link>
+          {/* Buttons Area */}
+          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+            <div className="hidden md:block">
+              <Link href="/vehicles/search">
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white">RÉSERVER</Button>
+              </Link>
+            </div>
 
             {user ? (
-              <div className="relative" ref={menuRef}>
-                <button
-                  onClick={() => setMenuOpen((s) => !s)}
-                  className="flex items-center gap-3 rounded-md px-3 py-1 hover:bg-gray-100"
-                >
-                  <div className="w-9 h-9 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center">
-                    {/* Avatar image when available, otherwise initials */}
-                    {user && (user as any).avatarUrl ? (
-                      // eslint-disable-next-line @next/next/no-img-element
-                      <img src={(user as any).avatarUrl} alt="avatar" className="w-9 h-9 object-cover" />
-                    ) : (
-                      <span className="text-sm font-medium text-slate-700">{initials}</span>
-                    )}
-                  </div>
-                  <span className="hidden sm:inline-block text-sm font-medium text-gray-700">{displayName}</span>
-                </button>
-
-                <div className={`absolute right-0 mt-2 w-44 bg-white border rounded-md shadow-lg py-1 z-50 transform origin-top-right transition-all duration-150 ease-out ${menuOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-1 pointer-events-none'}`}>
-                  <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setMenuOpen(false)}>
-                    Profil
-                  </Link>
-                  <Link href="/favorites" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" onClick={() => setMenuOpen(false)}>
-                    Mes favoris
-                  </Link>
+              <div className="flex items-center gap-2 sm:gap-3">
+                <NotificationBell />
+                <div className="relative" ref={menuRef}>
                   <button
-                    className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={async () => {
-                      try {
-                        await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' });
-                      } catch (e) {
-                        // ignore
-                      }
-                      setUser(null);
-                      setMenuOpen(false);
-                      router.push('/login');
-                    }}
+                    onClick={() => setMenuOpen((s) => !s)}
+                    className="flex items-center gap-2 rounded-md px-2 py-1 hover:bg-gray-100 transition-colors"
                   >
-                    Se déconnecter
+                    <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center ring-2 ring-gray-100">
+                      {user.avatarUrl ? (
+                        <img src={user.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-xs sm:text-sm font-medium text-slate-700">{initials}</span>
+                      )}
+                    </div>
+                    <span className="hidden lg:inline-block text-sm font-medium text-gray-700">{displayName}</span>
                   </button>
+
+                  <div className={`absolute right-0 mt-2 w-48 bg-white border border-gray-100 rounded-xl shadow-xl py-2 z-50 transform origin-top-right transition-all duration-200 ease-out ${menuOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-95 -translate-y-2 pointer-events-none'}`}>
+                    <div className="px-4 py-2 border-b border-gray-50 mb-1 lg:hidden">
+                      <p className="text-sm font-semibold text-gray-900 truncate">{displayName}</p>
+                      <p className="text-xs text-gray-500 truncate">{user.email}</p>
+                    </div>
+                    <Link href="/profile" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700" onClick={() => setMenuOpen(false)}>Profil</Link>
+                    <Link href="/favorites" className="block px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 hover:text-blue-700" onClick={() => setMenuOpen(false)}>Mes favoris</Link>
+                    <div className="border-t border-gray-50 my-1"></div>
+                    <button
+                      className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 font-medium"
+                      onClick={async () => {
+                        try {
+                          await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' });
+                        } catch (e) {}
+                        setUser(null);
+                        setMenuOpen(false);
+                        router.push('/login');
+                      }}
+                    >
+                      Se déconnecter
+                    </button>
+                  </div>
                 </div>
               </div>
             ) : (
-              <Link href="/login">
-                <Button variant="outline" className="border-gray-300">
-                  Connexion
-                </Button>
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link href="/login" className="hidden sm:block">
+                  <Button variant="ghost" className="text-gray-700 hover:text-blue-600">Connexion</Button>
+                </Link>
+                <Link href="/register">
+                  <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50 hidden sm:flex">Inscription</Button>
+                </Link>
+                <Link href="/login" className="sm:hidden">
+                  <Button size="sm" className="bg-blue-600 text-white">Connexion</Button>
+                </Link>
+              </div>
             )}
-          </div>
 
-          {/* Mobile Menu Toggle */}
-          <button
-            className="md:hidden"
-            onClick={() => setIsOpen(!isOpen)}
-            aria-label="Toggle menu"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+            {/* Mobile Menu Toggle */}
+            <button
+              className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+              onClick={() => setIsOpen(!isOpen)}
+              aria-label="Toggle menu"
+            >
+              {isOpen ? <X size={24} /> : <Menu size={24} />}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden pb-4 space-y-2">
-            <Link
-              href="/"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
-              onClick={() => setIsOpen(false)}
-            >
-              ACCUEIL
-            </Link>
-            <Link
-              href="/vehicles"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
-              onClick={() => setIsOpen(false)}
-            >
-              VÉHICULES
-            </Link>
-            <Link
-              href="/favorites"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
-              onClick={() => setIsOpen(false)}
-            >
-              MES FAVORIS
-            </Link>
-            <Link
-              href="/promotions"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
-              onClick={() => setIsOpen(false)}
-            >
-              PROMOTIONS
-            </Link>
-            <Link
-              href="/blog"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
-              onClick={() => setIsOpen(false)}
-            >
-              BLOG
-            </Link>
-            <Link
-              href="/about"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
-              onClick={() => setIsOpen(false)}
-            >
-              À PROPOS
-            </Link>
-            <Link
-              href="/contact"
-              className="block px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
-              onClick={() => setIsOpen(false)}
-            >
-              CONTACT
-            </Link>
-            <Link
-              href="/vehicles/search"
-              onClick={() => setIsOpen(false)}
-            >
-              <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                RÉSERVER
-              </Button>
-            </Link>
+          <div className="md:hidden border-t border-gray-100 py-4 pb-6 space-y-4 animate-in slide-in-from-top-1">
+            <div className="space-y-1 px-2">
+              <Link href="/" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl" onClick={() => setIsOpen(false)}>ACCUEIL</Link>
+              <Link href="/vehicles" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl" onClick={() => setIsOpen(false)}>VÉHICULES</Link>
+              <Link href="/favorites" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl" onClick={() => setIsOpen(false)}>MES FAVORIS</Link>
+              <Link href="/promotions" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl" onClick={() => setIsOpen(false)}>PROMOTIONS</Link>
+              <Link href="/blog" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl" onClick={() => setIsOpen(false)}>BLOG</Link>
+              <Link href="/about" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl" onClick={() => setIsOpen(false)}>À PROPOS</Link>
+              <Link href="/contact" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl" onClick={() => setIsOpen(false)}>CONTACT</Link>
+            </div>
+            
+            <div className="px-4 pt-2">
+              <Link href="/vehicles/search" onClick={() => setIsOpen(false)}>
+                <Button className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white text-base font-semibold shadow-lg shadow-blue-200">RÉSERVER MAINTENANT</Button>
+              </Link>
+            </div>
+
             {user ? (
-              <div className="px-4">
-                <Link href="/profile" onClick={() => setIsOpen(false)} className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded">
-                  Profil
-                </Link>
-                <Link href="/favorites" onClick={() => setIsOpen(false)} className="block w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded">
-                  Mes favoris
-                </Link>
-                <button
-                  className="w-full text-left px-4 py-2 text-gray-700 hover:bg-gray-100 rounded"
-                  onClick={async () => {
-                    try {
-                      await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' });
-                    } catch (e) {}
-                    setUser(null);
-                    setIsOpen(false);
-                    router.push('/login');
-                  }}
-                >
-                  Se déconnecter
-                </button>
+               <div className="px-4 pt-4 border-t border-gray-100 mx-2">
+                <div className="flex items-center justify-between px-2 mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
+                      {user.avatarUrl ? <img src={user.avatarUrl} alt="avatar" /> : <span className="font-bold text-slate-700">{initials}</span>}
+                    </div>
+                    <div>
+                      <p className="text-sm font-bold text-gray-900 truncate max-w-[150px]">{displayName}</p>
+                      <p className="text-xs text-gray-500 truncate max-w-[150px]">{user.email}</p>
+                    </div>
+                  </div>
+                  <NotificationBell />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Link href="/profile" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-2 p-3 bg-gray-50 text-gray-700 rounded-xl text-sm font-medium">Profil</Link>
+                  <button
+                    className="flex items-center justify-center gap-2 p-3 bg-red-50 text-red-600 rounded-xl text-sm font-medium"
+                    onClick={async () => {
+                      try { await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' }); } catch (e) {}
+                      setUser(null);
+                      setIsOpen(false);
+                      router.push('/login');
+                    }}
+                  >
+                    Déconnexion
+                  </button>
+                </div>
               </div>
             ) : (
-              <Link href="/login" onClick={() => setIsOpen(false)}>
-                <Button className="w-full border border-gray-300">Connexion</Button>
-              </Link>
+              <div className="px-4 grid grid-cols-2 gap-3 pt-2">
+                <Link href="/login" onClick={() => setIsOpen(false)}>
+                  <Button variant="outline" className="w-full h-11 rounded-xl">Connexion</Button>
+                </Link>
+                <Link href="/register" onClick={() => setIsOpen(false)}>
+                  <Button className="w-full h-11 rounded-xl bg-gray-900 hover:bg-black text-white">S'inscrire</Button>
+                </Link>
+              </div>
             )}
           </div>
         )}

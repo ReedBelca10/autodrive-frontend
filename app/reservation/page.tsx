@@ -14,6 +14,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { CheckoutForm } from '@/components/CheckoutForm';
 import { PaymentMethodSelector } from '@/components/PaymentMethodSelector';
 import { FedapayCheckout } from '@/components/FedapayCheckout';
+import { toast } from 'sonner';
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
 
@@ -191,7 +192,7 @@ export default function ReservationPage() {
 
       if (!response.ok) {
         if (response.status === 401) {
-          alert("Veuillez vous connecter pour effectuer une réservation");
+          toast.error("Veuillez vous connecter pour effectuer une réservation");
           return;
         }
         const errorData = await response.json();
@@ -228,7 +229,7 @@ export default function ReservationPage() {
 
     } catch (error: any) {
       console.error('Submission error:', error);
-      alert(error.message);
+      toast.error(error.message);
     } finally {
       setIsSubmitting(false);
     }
@@ -246,14 +247,14 @@ export default function ReservationPage() {
       });
 
       if (res.ok) {
-        alert(`Réservation confirmée avec succès! ID: ${reservationId}`);
-        window.location.href = '/profile';
+        toast.success(`Réservation confirmée avec succès ! ID: ${reservationId}`);
+        window.location.href = '/profile/reservations';
       } else {
-        alert("Erreur lors de la confirmation finale");
+        toast.error("Erreur lors de la confirmation finale");
       }
     } catch (e) {
       console.error(e);
-      alert("Erreur réseau");
+      toast.error("Erreur réseau");
     }
   };
 
@@ -531,11 +532,11 @@ export default function ReservationPage() {
                     paymentUrl={fedapayUrl}
                     reservationId={reservationId}
                     onSuccess={() => {
-                      alert('Paiement réussi! Votre réservation est confirmée.');
-                      window.location.href = '/profile';
+                      toast.success('Paiement réussi ! Votre réservation est confirmée.');
+                      window.location.href = '/profile/reservations';
                     }}
                     onError={(error) => {
-                      alert(`Erreur: ${error}`);
+                      toast.error(`Erreur: ${error}`);
                       setStep(3);
                     }}
                   />
