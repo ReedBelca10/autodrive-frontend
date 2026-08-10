@@ -9,7 +9,7 @@
 
 ## Pour les Visiteurs Non Authentifiés {#pour-les-visiteurs}
 
-### 🌍 Exploration de la Plateforme
+### Exploration de la Plateforme
 
 Même sans créer de compte, vous pouvez explorer toutes les véhicules disponibles et obtenir des informations précieuses.
 
@@ -75,7 +75,7 @@ Utilisez la page **"Contact"** pour:
 
 ## Pour les Clients {#pour-les-clients}
 
-### 📱 Créer un Compte et Se Connecter
+### Créer un Compte et Se Connecter
 
 #### **S'Inscrire**
 
@@ -100,7 +100,7 @@ Vous pouvez aussi vous inscrire avec:
 
 **Mot de passe oublié?** Cliquez sur "Mot de passe oublié?" et suivez les instructions pour le réinitialiser.
 
-### 🚗 Réserver un Véhicule
+### Réserver un Véhicule
 
 #### **Étape 1: Parcourir les Véhicules**
 
@@ -135,7 +135,7 @@ AutoDrive accepte plusieurs modes de paiement:
 
 Le paiement est **100% sécurisé**.
 
-### ❤️ Gérer mes Favoris
+### Gérer mes Favoris
 
 #### **Ajouter un Véhicule aux Favoris**
 
@@ -148,7 +148,7 @@ Le paiement est **100% sécurisé**.
 2. Vous verrez tous vos véhicules favoris
 3. Cliquez sur un véhicule pour le consulter ou le réserver
 
-### 👤 Gérer mon Profil
+### Gérer mon Profil
 
 #### **Consulter mes Informations**
 
@@ -183,7 +183,7 @@ Le paiement est **100% sécurisé**.
    - Confirmez le nouveau mot de passe
 4. Cliquez sur **"Mettre à jour"**
 
-### 📅 Consulter mes Réservations
+### Consulter mes Réservations
 
 #### **Voir l'Historique**
 
@@ -204,7 +204,7 @@ Le paiement est **100% sécurisé**.
    - Les informations de l'agence (téléphone, adresse)
    - Modalités de récupération et retour
 
-### 🛒 Processus de Paiement
+### Processus de Paiement
 
 #### **Au Moment du Paiement**
 
@@ -219,7 +219,7 @@ Le paiement est **100% sécurisé**.
 - Votre réservation apparaît dans **"Mes Réservations"**
 - Vous pouvez imprimer ou télécharger votre **confirmation**
 
-### 📞 Besoin d'Aide?
+### Besoin d'Aide?
 
 - Consultez notre **page FAQ**
 - Utilisez le formulaire de **contact**
@@ -230,7 +230,7 @@ Le paiement est **100% sécurisé**.
 
 ## Pour les Gestionnaires d'Agence {#pour-les-gestionnaires}
 
-### 🔐 Accès au Tableau de Bord
+### Accès au Tableau de Bord
 
 #### **Se Connecter**
 
@@ -238,7 +238,7 @@ Le paiement est **100% sécurisé**.
 2. Entrez vos identifiants fournis par AutoDrive
 3. Vous serez redirigé automatiquement vers le **tableau de bord gestionnaire**
 
-### 📊 Tableau de Bord
+### Tableau de Bord
 
 Votre tableau de bord vous permet de voir un aperçu:
 - **Nombre total de réservations** ce mois-ci
@@ -247,7 +247,7 @@ Votre tableau de bord vous permet de voir un aperçu:
 - **Évaluations clients** récentes
 - **Alertes importantes**
 
-### 🚗 Gérer les Véhicules
+### Gérer les Véhicules
 
 #### **Ajouter un Nouveau Véhicule**
 
@@ -292,7 +292,7 @@ Vous pouvez marquer un véhicule comme:
 2. Sélectionnez le nouveau statut
 3. Ajoutez une note si nécessaire (ex: "Révision prévue")
 
-### 📋 Gérer les Réservations
+### Gérer les Réservations
 
 #### **Consulter les Réservations**
 
@@ -343,7 +343,7 @@ Cliquez sur une réservation pour voir:
 4. Décidez de la politique de remboursement
 5. Confirmez l'annulation
 
-### 💬 Messages
+### Messages
 
 #### **Consulter les Messages**
 
@@ -365,7 +365,7 @@ Cliquez sur une réservation pour voir:
 4. Sélectionnez qui recevra l'annonce
 5. Publiez
 
-### 👥 Gérer mon Agence
+### Gérer mon Agence
 
 #### **Informations de l'Agence**
 
@@ -400,7 +400,7 @@ Cliquez sur une réservation pour voir:
 3. Ajustez si nécessaire
 4. Enregistrez
 
-### 📈 Statistiques et Rapports
+### Statistiques et Rapports
 
 #### **Consulter mes Statistiques**
 
@@ -426,7 +426,7 @@ Cliquez sur une réservation pour voir:
 3. Lisez les commentaires des clients
 4. Répondez aux avis (bon ou mauvais)
 
-### 🔒 Paramètres de Sécurité
+### Paramètres de Sécurité
 
 #### **Changer mon Mot de Passe**
 
@@ -445,7 +445,7 @@ Cliquez sur une réservation pour voir:
 4. Entrez le code à 6 chiffres
 5. Confirmez
 
-### 🆘 Support pour Gestionnaires
+### Support pour Gestionnaires
 
 - Contactez notre **équipe support dédiée**
 - Email: **location@autodrive.tg**
@@ -523,4 +523,4 @@ A: Oui, vous pouvez mettre en place des "offres spéciales" ou des réductions s
 
 Merci d'avoir choisi AutoDrive! Nous sommes là pour rendre votre expérience de location aussi simple et agréable que possible.
 
-**Bon voyage! 🚗**
+**Bon voyage!**

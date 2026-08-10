@@ -1,4 +1,4 @@
-# 🚗 AutoDrive Frontend - Documentation Complète
+# AutoDrive Frontend - Documentation Complète
 
 ## Table des Matières
 1. [Vue d'ensemble](#vue-densemble)
@@ -22,22 +22,22 @@
 
 **AutoDrive Frontend** est une application Next.js 15 pour une plateforme de location de véhicules en ligne. Elle offre :
 
-- ✅ Interface responsive (mobile-first)
-- ✅ Authentification JWT
-- ✅ Listing de véhicules avec filtres
-- ✅ Système de réservation en plusieurs étapes
-- ✅ Paiements sécurisés (Stripe + FedaPay)
-- ✅ Gestion des favoris
-- ✅ Upload d'avatars et médias
-- ✅ Dashboard admin complet
-- ✅ Dashboard manager avec gestion véhicules
-- ✅ Profil utilisateur
-- ✅ Gestion du blog
-- ✅ FAQ (Page publique + Admin)
-- ✅ Newsletter (Inscription + Admin)
-- ✅ Centre de notifications avec messagerie (Chat)
-- ✅ Formulaire de contact
-- ✅ Responsif sur tous les appareils
+- Interface responsive (mobile-first)
+- Authentification JWT
+- Listing de véhicules avec filtres
+- Système de réservation en plusieurs étapes
+- Paiements sécurisés (Stripe + FedaPay)
+- Gestion des favoris
+- Upload d'avatars et médias
+- Dashboard admin complet
+- Dashboard manager avec gestion véhicules
+- Profil utilisateur
+- Gestion du blog
+- FAQ (Page publique + Admin)
+- Newsletter (Inscription + Admin)
+- Centre de notifications avec messagerie (Chat)
+- Formulaire de contact
+- Responsif sur tous les appareils
 
 **Version**: 1.0.0
 **Next.js**: v15.5.7
@@ -1759,7 +1759,3 @@ Pour toute question:
 - Issues: GitHub issues
 - Email: support@autodrive.tg
 - Chat: Discord channel
-
-## License
-
-MIT
