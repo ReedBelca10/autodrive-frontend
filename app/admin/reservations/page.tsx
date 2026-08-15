@@ -51,7 +51,7 @@ export default function ReservationsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState('');
+  const [successMessage, _setSuccessMessage] = useState('');
 
   // Filter states
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'confirmed' | 'cancelled'>('all');
@@ -81,6 +81,7 @@ export default function ReservationsPage() {
         setError('Erreur lors du chargement des réservations');
       }
     } catch (err) {
+      console.error(err);
       setError('Impossible de se connecter au serveur');
     } finally {
       setLoading(false);
@@ -129,6 +130,7 @@ export default function ReservationsPage() {
         toast.success('Réservation confirmée avec succès');
       }
     } catch (err) {
+      console.error(err);
       setError('Erreur lors de la confirmation');
     }
   };
@@ -158,6 +160,7 @@ export default function ReservationsPage() {
         toast.success('Réservation annulée');
       }
     } catch (err) {
+      console.error(err);
       setError('Erreur lors de l\'annulation');
     }
   };
@@ -335,7 +338,7 @@ export default function ReservationsPage() {
             <label className="block text-sm text-gray-400 mb-2">Statut</label>
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
+              onChange={(e) => setStatusFilter(e.target.value as 'all' | 'pending' | 'confirmed' | 'cancelled')}
               className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
             >
               <option value="all">Tous les statuts</option>
@@ -350,7 +353,7 @@ export default function ReservationsPage() {
             <label className="block text-sm text-gray-400 mb-2">Paiement</label>
             <select
               value={paymentFilter}
-              onChange={(e) => setPaymentFilter(e.target.value as any)}
+              onChange={(e) => setPaymentFilter(e.target.value as 'all' | 'paid' | 'pending' | 'failed')}
               className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 text-white focus:outline-none focus:border-blue-500"
             >
               <option value="all">Tous les paiements</option>
