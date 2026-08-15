@@ -52,7 +52,7 @@ export const VehicleImage = ({
       >
         <div className="flex flex-col items-center gap-2">
           <ImageOff size={32} className="text-gray-500" />
-          <span className="text-sm text-gray-600 text-center">Pas d'image</span>
+          <span className="text-sm text-gray-600 text-center">Pas d’image</span>
         </div>
       </div>
     );
