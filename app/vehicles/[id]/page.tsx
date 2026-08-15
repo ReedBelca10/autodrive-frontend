@@ -313,8 +313,8 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
             {/* Description */}
             {vehicle.description && (
               <div className="mb-6 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg border border-blue-100 italic">
-                <p className="text-gray-700 leading-relaxed">"{vehicle.description}"</p>
-              </div>
+                  <p className="text-gray-700 leading-relaxed">“{vehicle.description}”</p>
+                </div>
             )}
 
             {/* Réservation */}

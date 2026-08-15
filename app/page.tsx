@@ -150,7 +150,7 @@ export default function Home() {
       name: 'Emma Rodriguez',
       location: 'Barcelone, Espagne',
       rating: 5,
-      text: "J'ai loué des voitures auprès de diverses entreprises, mais l'expérience avec AutoDrive a été exceptionnelle.",
+      text: "J’ai loué des voitures auprès de diverses entreprises, mais l’expérience avec AutoDrive a été exceptionnelle.",
       image: '/assets/testimonial_image_1.png',
     },
     {
@@ -164,7 +164,7 @@ export default function Home() {
       name: 'Ava Johnson',
       location: 'Sydney, Australie',
       rating: 5,
-      text: "Je recommande vivement AutoDrive! Leur flotte est incroyable et j'ai toujours l'impression de bénéficier de la meilleure offre avec un excellent service.",
+      text: "Je recommande vivement AutoDrive! Leur flotte est incroyable et j’ai toujours l’impression de bénéficier de la meilleure offre avec un excellent service.",
       image: '/assets/testimonial_image_2.png',
     },
   ];
@@ -696,7 +696,7 @@ export default function Home() {
 
                       {/* Lire plus */}
                       <div className="mt-4 flex items-center gap-2 text-orange-600 font-semibold group-hover:gap-3 transition">
-                        <span>Lire l'article</span>
+                          <span>Lire l’article</span>
                         <ArrowRight className="w-4 h-4" />
                       </div>
                     </div>
@@ -736,13 +736,13 @@ export default function Home() {
               required
               className="flex-1 px-6 py-4 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-300 font-medium text-gray-800"
             />
-            <Button
-              type="submit"
-              disabled={subscribing}
-              className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-4 rounded-xl transition-all duration-300 hover:shadow-lg disabled:opacity-70"
-            >
-              {subscribing ? "Chargement..." : "S'abonner"}
-            </Button>
+              <Button
+                type="submit"
+                disabled={subscribing}
+                className="bg-white text-blue-600 hover:bg-gray-100 font-bold px-8 py-4 rounded-xl transition-all duration-300 hover:shadow-lg disabled:opacity-70"
+              >
+                {subscribing ? 'Chargement...' : 'S’abonner'}
+              </Button>
           </form>
 
           {subscriptionStatus && (
