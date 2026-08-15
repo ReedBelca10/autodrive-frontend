@@ -65,7 +65,7 @@ export function useAvatarUpload({ apiBase, onSuccess, onError }: UseAvatarUpload
         }
 
         const data = await res.json()
-        let avatarUrl = data?.avatarUrl
+        const avatarUrl = data?.avatarUrl
 
         if (!avatarUrl) {
           setUploadError('Pas de URL d\'avatar retournée du serveur')

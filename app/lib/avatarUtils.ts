@@ -11,7 +11,7 @@ export function addCacheBuster(url: string, timestamp?: number): string {
   const ts = timestamp || Date.now()
 
   // Remove existing cache-buster if present
-  let cleanUrl = url.replace(/[&?]v=\d+/, '')
+  const cleanUrl = url.replace(/[&?]v=\d+/, '')
 
   // Add new cache-buster
   const separator = cleanUrl.includes('?') ? '&' : '?'
