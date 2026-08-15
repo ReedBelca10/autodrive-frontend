@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import { Calendar, User, Tag, ArrowLeft, Eye, Film, Music, Download, Image as ImageIcon } from 'lucide-react';
+import NextImage from 'next/image';
 import ReactMarkdown from 'react-markdown';
 
 interface BlogPost {
@@ -155,13 +156,14 @@ export default function BlogPostPage() {
 
         {/* Image de couverture */}
         {post.imageUrl && (
-          <div className="mb-12 rounded-lg overflow-hidden shadow-lg">
-            <img
-              src={post.imageUrl}
-              alt={post.title}
-              className="w-full h-96 object-cover"
-            />
-          </div>
+          <div className="mb-12 rounded-lg overflow-hidden shadow-lg relative h-96">
+              <NextImage
+                src={post.imageUrl}
+                alt={post.title}
+                fill
+                className="object-cover"
+              />
+            </div>
         )}
 
         {/* Contenu */}
@@ -206,10 +208,12 @@ export default function BlogPostPage() {
                     </a>
                   </div>
                   <div className="p-2">
-                    {item.type.startsWith('image/') ? (
-                      <img
+                      {item.type.startsWith('image/') ? (
+                      <NextImage
                         src={item.url}
                         alt={item.name}
+                        width={1200}
+                        height={675}
                         className="w-full h-auto rounded-lg"
                       />
                     ) : item.type.startsWith('video/') ? (
@@ -271,10 +275,11 @@ export default function BlogPostPage() {
 
                     return (
                       <div className="relative h-40 bg-gray-200 overflow-hidden">
-                        <img
+                        <NextImage
                           src={displayImage}
                           alt={relatedPost.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition"
+                          fill
+                          className="object-cover group-hover:scale-105 transition"
                         />
                       </div>
                     );
