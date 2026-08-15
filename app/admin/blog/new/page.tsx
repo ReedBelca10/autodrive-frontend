@@ -75,7 +75,7 @@ export default function NewBlogPostPage() {
       if (!response.ok) {
         const errData = await response.json().catch(() => ({}));
         console.error('[BlogNew] Media upload failed:', response.status, errData);
-        throw new Error(errData.message || 'Erreur lors de l\'upload du média');
+        throw new Error(errData.message || 'Erreur lors de l’upload du média');
       }
 
       const data = await response.json();
@@ -89,7 +89,7 @@ export default function NewBlogPostPage() {
         }]
       }));
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Erreur d\'upload');
+      setError(err instanceof Error ? err.message : 'Erreur d’upload');
     } finally {
       setUploadingMedia(false);
     }
@@ -129,11 +129,11 @@ export default function NewBlogPostPage() {
       return;
     }
     if (!form.excerpt.trim()) {
-      setError('L\'extrait est obligatoire');
+    setError('L’extrait est obligatoire');
       return;
     }
     if (!form.content.trim()) {
-      setError('Le contenu est obligatoire');
+    setError('Le contenu est obligatoire');
       return;
     }
 
@@ -424,7 +424,7 @@ export default function NewBlogPostPage() {
               className="flex-1 flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-2"
             >
               <Save size={20} />
-              {submitting ? 'Création en cours...' : 'Créer l\'article'}
+              {submitting ? 'Création en cours...' : 'Créer l’article'}
             </Button>
             <Link href="/admin/blog" className="flex-1">
               <Button
