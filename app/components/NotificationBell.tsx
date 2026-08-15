@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from 'react';
-import { Bell, MapPin, MessageSquare, CheckCircle } from 'lucide-react';
+import { Bell, MessageSquare, CheckCircle } from 'lucide-react';
 import Link from 'next/link';
 
 function formatTimeAgo(dateString: string) {
@@ -9,7 +9,7 @@ function formatTimeAgo(dateString: string) {
     const now = new Date();
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    if (seconds < 60) return "À l'instant";
+    if (seconds < 60) return "À l’instant";
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) return `Il y a ${minutes} min`;
     const hours = Math.floor(minutes / 60);

@@ -154,10 +154,10 @@ export default function ManagerDashboard() {
         setReservations(reservations.filter(r => r._id !== id));
         toast.success('Réservation archivée avec succès');
       } else {
-        setError("Erreur lors de l'archivage de la réservation");
+        setError("Erreur lors de l’archivage de la réservation");
       }
     } catch (err) {
-      setError("Erreur lors de l'archivage de la réservation");
+      setError("Erreur lors de l’archivage de la réservation");
     }
   };
 

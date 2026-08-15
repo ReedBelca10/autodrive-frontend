@@ -142,7 +142,7 @@ export default function FaqPage() {
                     {/* Contact Support */}
                     <div className="mt-16 bg-blue-50 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 border border-blue-100">
                         <div>
-                            <h2 className="text-2xl font-bold text-gray-900 mb-2">Vous n'avez pas trouvé votre réponse ?</h2>
+                            <h2 className="text-2xl font-bold text-gray-900 mb-2">Vous n’avez pas trouvé votre réponse ?</h2>
                             <p className="text-gray-600">Notre équipe est là pour vous aider personnellement.</p>
                         </div>
                         <a

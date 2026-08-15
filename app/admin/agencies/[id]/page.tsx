@@ -57,7 +57,7 @@ export default function AgencyEditPage() {
           setManagers(Array.isArray(managersData) ? managersData : []);
         }
 
-        // Charger l'agence
+        // Charger l’agence
         const agencyRes = await fetch(`${API_BASE}/agencies/${agencyId}`, {
           credentials: 'include',
         });

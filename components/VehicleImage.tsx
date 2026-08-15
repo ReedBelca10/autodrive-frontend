@@ -43,7 +43,7 @@ export const VehicleImage = ({
     setIsLoading(false);
   };
 
-  // Si pas d'URL ou erreur, afficher le placeholder
+  // Si pas d’URL ou erreur, afficher le placeholder
   if (!src || imageError) {
     return (
       <div

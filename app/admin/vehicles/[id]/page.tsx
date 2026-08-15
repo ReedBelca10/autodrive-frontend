@@ -166,7 +166,7 @@ export default function EditVehiclePage() {
         // Validation du type
         const validTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'video/mp4'];
         if (!validTypes.includes(file.type)) {
-          setError(`Le type de fichier "${file.type}" n'est pas supporté`);
+          setError(`Le type de fichier "${file.type}" n’est pas supporté`);
           setUploading(false);
           e.target.value = '';
           return;
@@ -518,7 +518,7 @@ export default function EditVehiclePage() {
                     <Upload size={20} />
                     <span>Cliquez pour ajouter des fichiers</span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-2">Jusqu'à 10 MB par fichier</p>
+                  <p className="text-xs text-gray-500 mt-2">Jusqu’à 10 MB par fichier</p>
                 </label>
               </div>
             )}

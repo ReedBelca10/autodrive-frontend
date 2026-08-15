@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Save, AlertCircle, FileUp, Image as ImageIcon, Film, Music, X } from 'lucide-react';
+import { ArrowLeft, Save, AlertCircle, FileUp, Film, Music, X } from 'lucide-react';
 
 interface BlogPost {
   _id: string;
@@ -229,7 +229,7 @@ export default function EditBlogPostPage() {
             <ArrowLeft size={24} className="text-gray-600" />
           </button>
         </Link>
-        <h1 className="text-3xl font-bold text-gray-900">Éditer l'article</h1>
+        <h1 className="text-3xl font-bold text-gray-900">Éditer l’article</h1>
       </div>
 
       {/* Error message */}
@@ -316,7 +316,7 @@ export default function EditBlogPostPage() {
               name="content"
               value={form.content}
               onChange={handleChange}
-              placeholder="Contenu complet de l'article (supports Markdown)"
+              placeholder="Contenu complet de l’article (supports Markdown)"
               rows={12}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
               required
@@ -425,7 +425,7 @@ export default function EditBlogPostPage() {
           {/* Image URL */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              URL de l'image
+              URL de l’image
             </label>
             <input
               type="text"

@@ -5,12 +5,9 @@ import { Card } from '@/components/ui/card';
 import {
   Trash2,
   CheckCircle,
-  Clock,
-  CreditCard,
   Search,
   FileText,
   AlertCircle,
-  MoreVertical,
   Check,
 } from 'lucide-react';
 import { toast } from 'sonner';
@@ -138,7 +135,7 @@ export default function ReservationsPage() {
 
   const cancelReservation = async (id: string, skipConfirm = false) => {
     if (!skipConfirm) {
-      toast("Confirmation d'annulation", {
+      toast("Confirmation d’annulation", {
         description: "Êtes-vous sûr de vouloir annuler cette réservation ?",
         action: {
           label: "Annuler",

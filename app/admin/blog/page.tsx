@@ -40,7 +40,7 @@ export default function BlogManagementPage() {
       }
 
       const responseData = await response.json();
-      // L'API retourne { data, total, pages } ou juste un tableau
+      // L’API retourne { data, total, pages } ou juste un tableau
       const postsData = Array.isArray(responseData) ? responseData : responseData.data || [];
       setPosts(postsData);
       setError('');

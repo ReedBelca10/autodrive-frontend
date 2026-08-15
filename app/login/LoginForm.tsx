@@ -28,7 +28,7 @@ export default function LoginForm() {
       
       if (!res.ok) {
         const data = await res.json();
-        // Traduire les messages d'erreur du backend
+        // Traduire les messages d’erreur du backend
         let errorMsg = data.message || data.error || 'Erreur lors de la connexion';
         if (errorMsg.includes('not found') || errorMsg.includes('Utilisateur')) errorMsg = 'Email ou mot de passe incorrect';
         if (errorMsg.includes('invalid')) errorMsg = 'Email ou mot de passe incorrect';
@@ -191,7 +191,7 @@ export default function LoginForm() {
                   </button>
                 </div>
 
-                <p className="mt-6 text-sm text-gray-400">Pas de compte <Link href="/register" className="text-blue-600 underline">S'inscrire</Link></p>
+                <p className="mt-6 text-sm text-gray-400">Pas de compte <Link href="/register" className="text-blue-600 underline">S’inscrire</Link></p>
               </div>
             </form>
           </div>

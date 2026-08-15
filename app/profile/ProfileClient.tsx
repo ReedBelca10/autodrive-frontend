@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React, { useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -105,7 +105,7 @@ export default function ProfileClient() {
                 fullName={user?.fullName}
                 onAvatarChange={(avatarUrl) => {
                   setUser((u) => (u ? { ...u, avatarUrl } : null))
-                  // Force refetch après 500ms pour s'assurer que le serveur a tout enregistré
+                  // Force refetch après 500ms pour s’assurer que le serveur a tout enregistré
                   setTimeout(() => {
                     fetchProfile()
                   }, 500)

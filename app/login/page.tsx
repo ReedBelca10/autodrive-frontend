@@ -12,7 +12,7 @@ export default function LoginPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Si l'utilisateur est déjà authentifié, redirige selon son rôle
+    // Si l’utilisateur est déjà authentifié, redirige selon son rôle
     const redirectIfAuthenticated = async () => {
       try {
         const base = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';

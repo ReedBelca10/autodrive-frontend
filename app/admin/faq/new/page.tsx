@@ -147,7 +147,7 @@ export default function NewFaqPage() {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Ordre d'affichage (priorité)
+                                Ordre d’affichage (priorité)
                             </label>
                             <input
                                 type="number"

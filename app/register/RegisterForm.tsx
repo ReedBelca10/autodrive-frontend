@@ -175,7 +175,7 @@ export default function RegisterForm() {
 
               <div className="flex flex-col items-center">
                 <button disabled={loading} className="mt-2 inline-flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-full font-semibold disabled:opacity-60">
-                  <span>{loading ? "Inscription..." : "S'inscrire"}</span>
+                  <span>{loading ? "Inscription..." : "S’inscrire"}</span>
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10.293 15.707a1 1 0 010-1.414L13.586 11H4a1 1 0 110-2h9.586l-3.293-3.293a1 1 0 111.414-1.414l5 5a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0z" clipRule="evenodd" />
                   </svg>

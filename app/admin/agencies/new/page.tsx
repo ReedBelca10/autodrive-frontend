@@ -58,7 +58,7 @@ export default function AgencyFormPage() {
           setManagers(Array.isArray(managersData) ? managersData : []);
         }
 
-        // Charger l'agence si édition
+        // Charger l’agence si édition
         if (isEdit) {
           const agencyRes = await fetch(`${API_BASE}/agencies/${agencyId}`, {
             credentials: 'include',

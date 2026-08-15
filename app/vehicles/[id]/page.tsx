@@ -48,7 +48,7 @@ export default function VehicleDetailPage({ params }: { params: Promise<{ id: st
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
 
-  // Récupérer le détail du véhicule depuis l'API
+  // Récupérer le détail du véhicule depuis l’API
   useEffect(() => {
     const fetchVehicle = async () => {
       try {

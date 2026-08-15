@@ -197,7 +197,7 @@ export default function DashboardPage() {
     <div className="space-y-8">
       <div>
         <h1 className="text-4xl font-bold mb-2">Tableau de Bord</h1>
-        <p className="text-gray-400">Vue d'ensemble des réservations et paiements</p>
+        <p className="text-gray-400">Vue d’ensemble des réservations et paiements</p>
       </div>
 
       {error && (

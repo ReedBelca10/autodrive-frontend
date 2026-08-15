@@ -113,7 +113,7 @@ export default function ReservationPage() {
 
     // Duration in days (round up to next active 24h chunk, or just simplified day diff)
     // Business logic: Any part of a day counts as a day? Or 24h blocks?
-    // Let's us 24h blocks rounded up.
+    // Let’s us 24h blocks rounded up.
     const hours = diff / (1000 * 60 * 60);
     const days = Math.ceil(hours / 24);
 
@@ -152,17 +152,17 @@ export default function ReservationPage() {
     }
 
     if (step === 3) { // Note: Step 2 skipped if vehicle pre-selected? 
-      // Actually let's keep step 2 as just "Review Vehicle" or skip it if we have one.
+      // Actually let’s keep step 2 as just "Review Vehicle" or skip it if we have one.
       // But preserving the original structure:
       // If we have a vehicle, we might want to skip the "selection list" step or just show the selected one.
-      // Let's assume step 2 is "Details & Options" now.
+      // Let’s assume step 2 is "Details & Options" now.
     }
 
     if (step === 2) {
       // Step 2 in original was Vehicle Selection. 
       // Since users click "Reserve" on a specific vehicle, we already have it.
       // We can repurpose Step 2 for "Review & Options" or just move to personal info.
-      // Let's make Step 2 "Personal Info" and Step 3 "Summary/Payment" for better flow.
+      // Let’s make Step 2 "Personal Info" and Step 3 "Summary/Payment" for better flow.
       if (!formData.firstName || !formData.lastName || !formData.email || !formData.phone || !formData.drivingLicense) {
         setValidationError('Veuillez remplir toutes les informations personnelles');
         return;
@@ -290,7 +290,7 @@ export default function ReservationPage() {
             <AlertCircle size={48} className="mx-auto text-orange-500 mb-4" />
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Aucun véhicule sélectionné</h2>
             <p className="text-gray-600 mb-6">
-              Veuillez d'abord sélectionner un véhicule avant de procéder à la réservation.
+              Veuillez d’abord sélectionner un véhicule avant de procéder à la réservation.
             </p>
             <Link href="/vehicles">
               <Button className="bg-blue-600 hover:bg-blue-700 text-white">
@@ -491,7 +491,7 @@ export default function ReservationPage() {
                 </div>
 
                 <div className="space-y-4 mb-8">
-                  <h3 className="font-bold">Options d'assurance</h3>
+                  <h3 className="font-bold">Options d’assurance</h3>
                   <div className="space-y-2">
                     {[
                       { value: 'basic', label: 'Assurance Tiers (Incluse)', price: 0 },

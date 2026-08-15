@@ -29,8 +29,8 @@ export function AvatarDisplay({
   useEffect(() => {
     if (avatarUrl && avatarUrl !== currentUrl) {
       
-      // Ajouter un cache-buster pour s'assurer que le navigateur
-      // recharge l'image plutôt que de la servir depuis le cache
+      // Ajouter un cache-buster pour s’assurer que le navigateur
+      // recharge l’image plutôt que de la servir depuis le cache
       let urlWithCacheBuster = avatarUrl
       
       // Détecter le séparateur approprié (?  ou &)

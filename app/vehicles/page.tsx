@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from 'next/link';
@@ -87,7 +86,7 @@ export default function VehiclesPage() {
 
         const data = await response.json();
 
-        // S'assurer que c'est un tableau
+        // S’assurer que c’est un tableau
         const vehicles = Array.isArray(data) ? data : [];
         setAllVehicles(vehicles);
         setError(null);
@@ -252,7 +251,7 @@ export default function VehiclesPage() {
           </div>
         )}
 
-        {/* État d'erreur */}
+        {/* État d’erreur */}
         {error && (
           <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center mb-8">
             <p className="text-red-700 text-lg font-medium">Erreur : {error}</p>
@@ -458,7 +457,7 @@ export default function VehiclesPage() {
 
             {/* Véhicules */}
             <div className="lg:col-span-3">
-              {/* Barre d'outils */}
+              {/* Barre d’outils */}
               <div className="bg-white rounded-2xl shadow-md p-6 mb-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                   <div className="text-gray-700 font-medium">
@@ -522,7 +521,7 @@ export default function VehiclesPage() {
                               <div className="w-full h-full flex items-center justify-center bg-gray-300">
                                 <div className="flex flex-col items-center gap-2">
                                   <ImageOff size={32} className="text-gray-500" />
-                                  <span className="text-gray-500 text-sm">Pas d'image</span>
+                                  <span className="text-gray-500 text-sm">Pas d’image</span>
                                 </div>
                               </div>
                             )}

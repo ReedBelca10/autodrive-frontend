@@ -218,13 +218,13 @@ export default function Home() {
       });
 
       if (res.ok) {
-        setSubscriptionStatus({ type: 'success', message: "C'est fait ! Vous êtes maintenant inscrit à notre newsletter." });
+        setSubscriptionStatus({ type: 'success', message: "C’est fait ! Vous êtes maintenant inscrit à notre newsletter." });
         setNewsletterEmail('');
-        toast.success("C'est fait ! Vous êtes maintenant inscrit à notre newsletter.");
+        toast.success("C’est fait ! Vous êtes maintenant inscrit à notre newsletter.");
       } else {
         const data = await res.json();
-        toast.error(data.message || "Oups... Nous n'avons pas pu valider votre inscription.");
-        setSubscriptionStatus({ type: 'error', message: data.message || "Oups... Nous n'avons pas pu valider votre inscription." });
+        toast.error(data.message || "Oups... Nous n’avons pas pu valider votre inscription.");
+        setSubscriptionStatus({ type: 'error', message: data.message || "Oups... Nous n’avons pas pu valider votre inscription." });
       }
     } catch (err) {
       console.error('Newsletter error:', err);
@@ -467,7 +467,7 @@ export default function Home() {
                         />
                       ) : (
                         <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-                          <p className="text-gray-500">Pas d'image</p>
+                          <p className="text-gray-500">Pas d’image</p>
                         </div>
                       )}
                     </div>
@@ -512,7 +512,7 @@ export default function Home() {
               ))
             ) : (
               <div className="col-span-full text-center py-12">
-                <p className="text-gray-600">Aucun véhicule disponible pour l'affichage en vedette</p>
+                <p className="text-gray-600">Aucun véhicule disponible pour l’affichage en vedette</p>
               </div>
             )}
           </div>

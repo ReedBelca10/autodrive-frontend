@@ -220,7 +220,7 @@ export default function BlogPostPage() {
                     ) : (
                       <audio controls className="w-full mt-2">
                         <source src={item.url} type={item.type} />
-                        Votre navigateur ne supporte pas la lecture d'audio.
+                        Votre navigateur ne supporte pas la lecture d’audio.
                       </audio>
                     )}
                   </div>
@@ -294,7 +294,7 @@ export default function BlogPostPage() {
         )}
       </article>
 
-      {/* Appel à l'action */}
+      {/* Appel à l’action */}
       <section className="bg-orange-600 text-white py-12 mt-12">
         <div className="max-w-4xl mx-auto px-4 text-center">
           <h2 className="text-3xl font-bold mb-4">Prêt à louer un véhicule ?</h2>

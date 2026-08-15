@@ -189,7 +189,7 @@ export default function EditFaqPage() {
 
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                Ordre d'affichage
+                                Ordre d’affichage
                             </label>
                             <input
                                 type="number"

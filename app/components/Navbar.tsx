@@ -254,7 +254,7 @@ export default function Navbar() {
                   <Button variant="outline" className="w-full h-11 rounded-xl">Connexion</Button>
                 </Link>
                 <Link href="/register" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full h-11 rounded-xl bg-gray-900 hover:bg-black text-white">S'inscrire</Button>
+                  <Button className="w-full h-11 rounded-xl bg-gray-900 hover:bg-black text-white">S’inscrire</Button>
                 </Link>
               </div>
             )}

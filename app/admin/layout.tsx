@@ -90,7 +90,7 @@ export default function AdminLayout({
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
         <div className="bg-gray-800 border-b border-gray-700 p-4">
-          <h2 className="text-2xl font-bold">Panneau d'administration</h2>
+          <h2 className="text-2xl font-bold">Panneau d’administration</h2>
         </div>
 
         {/* Content */}

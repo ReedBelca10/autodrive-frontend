@@ -8,7 +8,7 @@ function formatTimeAgo(dateString: string | Date) {
     const now = new Date();
     const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-    if (seconds < 60) return "À l'instant";
+    if (seconds < 60) return "À l’instant";
     const minutes = Math.floor(seconds / 60);
     if (minutes < 60) return `Il y a ${minutes} min`;
     const hours = Math.floor(minutes / 60);
@@ -148,7 +148,7 @@ export default function NotificationsPage() {
             <div className="max-w-6xl mx-auto">
                 <header className="mb-8">
                     <h1 className="text-3xl font-bold text-gray-900">Centre de Notifications</h1>
-                    <p className="text-gray-500 mt-2">Gérez vos réservations et vos échanges avec l'équipe AutoDrive.</p>
+                    <p className="text-gray-500 mt-2">Gérez vos réservations et vos échanges avec l’équipe AutoDrive.</p>
                 </header>
 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -230,7 +230,7 @@ export default function NotificationsPage() {
                                                     <div className="flex items-center gap-3">
                                                         <MapPin className="text-green-600" />
                                                         <div>
-                                                            <p className="text-sm font-bold text-green-800">Localisation de l'agence</p>
+                                                            <p className="text-sm font-bold text-green-800">Localisation de l’agence</p>
                                                             <p className="text-xs text-green-600">Ouvrir dans Google Maps</p>
                                                         </div>
                                                     </div>

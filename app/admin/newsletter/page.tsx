@@ -78,7 +78,7 @@ export default function NewsletterAdminPage() {
                         <thead>
                             <tr className="bg-gray-50 border-b border-gray-200 text-sm font-semibold text-gray-700">
                                 <th className="px-6 py-4">EMAIL</th>
-                                <th className="px-6 py-4">DATE D'INSCRIPTION</th>
+                                <th className="px-6 py-4">DATE D’INSCRIPTION</th>
                                 <th className="px-6 py-4 text-center">STATUT</th>
                             </tr>
                         </thead>

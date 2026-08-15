@@ -93,7 +93,7 @@ export default function AgenciesPage() {
       if (response.ok) {
         const updatedAgency = await response.json();
         setAgencies(agencies.map(a => a._id === id ? { ...a, isActive: updatedAgency.isActive } : a));
-        toast.success(`Statut de l'agence ${updatedAgency.name} mis à jour`);
+        toast.success(`Statut de l’agence ${updatedAgency.name} mis à jour`);
       } else {
         toast.error('Erreur lors de la modification du statut');
       }

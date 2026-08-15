@@ -86,7 +86,7 @@ export default function MyReservationsPage() {
         setReservations(Array.isArray(data) ? data : []);
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Une erreur s'est produite"
+          err instanceof Error ? err.message : "Une erreur s’est produite"
         );
       } finally {
         setLoading(false);
@@ -98,7 +98,7 @@ export default function MyReservationsPage() {
 
   const handleCancelReservation = async (id: string, skipConfirm = false) => {
     if (!skipConfirm) {
-      toast("Confirmation d'annulation", {
+      toast("Confirmation d’annulation", {
         description: "Êtes-vous sûr de vouloir annuler cette réservation ?",
         action: {
           label: "Oui, annuler",
@@ -123,7 +123,7 @@ export default function MyReservationsPage() {
       if (!res.ok) {
         const errorData = await res.json();
         throw new Error(
-          errorData.message || "Impossible d'annuler la réservation"
+          errorData.message || "Impossible d’annuler la réservation"
         );
       }
 
@@ -135,7 +135,7 @@ export default function MyReservationsPage() {
 
       toast.success("Réservation annulée avec succès");
     } catch (err) {
-      const msg = err instanceof Error ? err.message : "Une erreur s'est produite";
+      const msg = err instanceof Error ? err.message : "Une erreur s’est produite";
       toast.error(msg);
       setError(msg);
     } finally {
@@ -192,7 +192,7 @@ export default function MyReservationsPage() {
               Aucune réservation
             </h3>
             <p className="text-slate-500 mb-6">
-              Vous n'avez pas encore de réservation. Commencez par explorer nos
+              Vous n’avez pas encore de réservation. Commencez par explorer nos
               véhicules.
             </p>
             <Button

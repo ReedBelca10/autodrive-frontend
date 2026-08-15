@@ -66,7 +66,7 @@ export default function FavoritesPage() {
       setIsAuthenticated(true);
     } catch (err) {
       console.error('Erreur:', err);
-      // If we already know we are not authenticated, don't override the error
+      // If we already know we are not authenticated, don’t override the error
       if (isAuthenticated) {
         setError('Impossible de charger vos favoris');
       }
@@ -140,7 +140,7 @@ export default function FavoritesPage() {
           </p>
         </div>
 
-        {/* Messages d'erreur */}
+        {/* Messages d’erreur */}
         {error && !loading && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
             <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />

@@ -23,7 +23,7 @@ export function AvatarUpload({
   const { uploading, uploadError, preview, uploadAvatar, clearError } = useAvatarUpload({
     apiBase,
     onSuccess: (url) => {
-      // Mettre à jour l'URL affichée IMMÉDIATEMENT
+      // Mettre à jour l’URL affichée IMMÉDIATEMENT
       setDisplayUrl(url)
       onAvatarChange?.(url)
     },
@@ -62,7 +62,7 @@ export function AvatarUpload({
         <button
           onClick={triggerFileInput}
           disabled={uploading || disabled}
-          title={uploading ? 'Téléchargement en cours...' : "Modifier l'avatar"}
+          title={uploading ? 'Téléchargement en cours...' : "Modifier l’avatar"}
           className="absolute bottom-0 right-0 -mb-1 -mr-1 w-9 h-9 rounded-full bg-white border-2 border-blue-600 flex items-center justify-center text-blue-600 shadow-lg hover:bg-blue-50 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {uploading ? (

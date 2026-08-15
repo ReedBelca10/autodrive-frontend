@@ -201,7 +201,7 @@ export default function BlogPage() {
 
                     {/* Bouton */}
                     <button className="text-orange-600 font-semibold hover:text-orange-700 group-hover:translate-x-1 transition">
-                      Lire l'article →
+                      Lire l’article →
                     </button>
                   </div>
                 </Link>
