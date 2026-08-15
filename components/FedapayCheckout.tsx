@@ -50,11 +50,11 @@ export function FedapayCheckout({ paymentUrl, reservationId, onSuccess, onError 
                 onError('Le paiement a été refusé ou annulé');
             } else {
                 // Le paiement est toujours en attente
-                onError('Le paiement n\'a pas été complété. Veuillez réessayer.');
+                onError('Le paiement n’a pas été complété. Veuillez réessayer.');
             }
-        } catch (error: any) {
+        } catch (error: unknown) {
             console.error('Error verifying payment:', error);
-            onError(error.message || 'Erreur lors de la vérification du paiement');
+            onError((error as Error)?.message || 'Erreur lors de la vérification du paiement');
         } finally {
             setIsVerifying(false);
         }
@@ -140,7 +140,7 @@ export function FedapayCheckout({ paymentUrl, reservationId, onSuccess, onError 
 
             {isChecking && (
                 <div className="text-center text-sm text-gray-500">
-                    <p>Une fenêtre de paiement s'est ouverte. Veuillez compléter votre paiement.</p>
+                    <p>Une fenêtre de paiement s’est ouverte. Veuillez compléter votre paiement.</p>
                     <p className="mt-1">Ne fermez pas cette page pendant le paiement.</p>
                 </div>
             )}
