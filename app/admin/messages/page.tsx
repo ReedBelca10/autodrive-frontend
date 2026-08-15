@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { Card } from '@/components/ui/card';
 import { Trash2, CheckCircle } from 'lucide-react';
 import { toast } from 'sonner';
@@ -19,7 +18,7 @@ export default function MessagesPage() {
   const [messages, setMessages] = useState<ContactMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const router = useRouter();
+  
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
   useEffect(() => {
@@ -36,6 +35,7 @@ export default function MessagesPage() {
         setMessages(data);
       }
     } catch (err) {
+      console.error(err);
       setError('Erreur lors du chargement des messages');
     } finally {
       setLoading(false);
@@ -53,6 +53,7 @@ export default function MessagesPage() {
         setMessages(messages.map(m => m._id === id ? { ...m, read: true } : m));
       }
     } catch (err) {
+      console.error(err);
       setError('Erreur lors de la mise à jour');
     }
   };
@@ -79,6 +80,7 @@ export default function MessagesPage() {
         setMessages(messages.filter(m => m._id !== id));
       }
     } catch (err) {
+      console.error(err);
       setError('Erreur lors de la suppression');
     }
   };
