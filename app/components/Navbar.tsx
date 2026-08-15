@@ -8,11 +8,18 @@ import { Button } from '@/components/ui/button';
 import { Menu, X } from 'lucide-react';
 import NotificationBell from './NotificationBell';
 
+interface UserProfile {
+  fullName?: string;
+  email?: string;
+  avatarUrl?: string;
+  role?: string;
+}
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const router = useRouter();
-  const [user, setUser] = useState<{ fullName?: string; email?: string; avatarUrl?: string } | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -22,7 +29,7 @@ export default function Navbar() {
   const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     if (user) {
-      const userRole = (user as any).role;
+      const userRole = user.role;
       if (userRole === 'admin') {
         router.push('/admin');
       } else if (userRole === 'manager') {
@@ -136,7 +143,7 @@ export default function Navbar() {
                   >
                     <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center ring-2 ring-gray-100">
                       {user.avatarUrl ? (
-                        <img src={user.avatarUrl} alt="avatar" className="w-full h-full object-cover" />
+                        <Image src={user.avatarUrl} alt="avatar" width={36} height={36} className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-xs sm:text-sm font-medium text-slate-700">{initials}</span>
                       )}
@@ -217,7 +224,7 @@ export default function Navbar() {
                 <div className="flex items-center justify-between px-2 mb-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
-                      {user.avatarUrl ? <img src={user.avatarUrl} alt="avatar" /> : <span className="font-bold text-slate-700">{initials}</span>}
+                      {user.avatarUrl ? <Image src={user.avatarUrl} alt="avatar" width={40} height={40} /> : <span className="font-bold text-slate-700">{initials}</span>}
                     </div>
                     <div>
                       <p className="text-sm font-bold text-gray-900 truncate max-w-[150px]">{displayName}</p>

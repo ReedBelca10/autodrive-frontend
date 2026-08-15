@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, Save, AlertCircle, FileUp, Image as ImageIcon, Film, Music, X } from 'lucide-react';
 
 interface BlogPost {
@@ -333,7 +334,9 @@ export default function EditBlogPostPage() {
               {(form.media || []).map((item, index) => (
                 <div key={index} className="relative group border rounded-lg overflow-hidden bg-gray-50 aspect-video flex items-center justify-center">
                   {item.type.startsWith('image/') ? (
-                    <img src={item.url} alt={item.name} className="w-full h-full object-cover" />
+                    <div className="relative w-full h-full">
+                      <Image src={item.url} alt={item.name} fill className="object-cover" />
+                    </div>
                   ) : item.type.startsWith('video/') ? (
                     <Film size={32} className="text-blue-500" />
                   ) : (

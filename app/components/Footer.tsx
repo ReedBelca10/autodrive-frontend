@@ -119,9 +119,9 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="/blog" className="hover:text-white transition">
+                <Link href="/blog" className="hover:text-white transition">
                   NOTRE BLOG
-                </a>
+                </Link>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition">
@@ -134,9 +134,9 @@ export default function Footer() {
                 </Link>
               </li>
               <li>
-                <a href="/blog" className="hover:text-white transition">
+                <Link href="/blog" className="hover:text-white transition">
                   CONSEILS LOCATION DE VOITURES
-                </a>
+                </Link>
               </li>
             </ul>
           </div>

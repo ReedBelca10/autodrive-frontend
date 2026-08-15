@@ -28,7 +28,7 @@ interface Notification {
     type: 'reservation_new' | 'reservation_confirmed' | 'message';
     isRead: boolean;
     createdAt: string;
-    reservationId?: any;
+    reservationId?: string | undefined;
 }
 
 export default function NotificationBell() {
@@ -79,7 +79,7 @@ export default function NotificationBell() {
         }
     };
 
-    const getIcon = (type: string) => {
+    const getIcon = (type: Notification['type']) => {
         switch (type) {
             case 'reservation_new': return <Bell className="text-blue-500" size={18} />;
             case 'reservation_confirmed': return <CheckCircle className="text-green-500" size={18} />;
