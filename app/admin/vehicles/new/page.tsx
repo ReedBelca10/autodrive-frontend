@@ -137,9 +137,9 @@ export default function NewVehiclePage() {
       }
 
       setForm({ ...form, mediaUrls: [...form.mediaUrls, ...newUrls] });
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.message || 'Erreur lors de l\'upload');
+      setError(err instanceof Error ? err.message : String(err) || 'Erreur lors de l\'upload');
     } finally {
       setUploading(false);
     }
@@ -179,9 +179,9 @@ export default function NewVehiclePage() {
         const data = await response.json();
         setError(data.message || 'Erreur lors de l\'ajout du véhicule');
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err);
-      setError(err.message);
+      setError(err instanceof Error ? err.message : String(err));
     } finally {
       setLoading(false);
     }
