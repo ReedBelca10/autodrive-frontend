@@ -51,7 +51,7 @@ export default function ReservationsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [expandedId, setExpandedId] = useState<string | null>(null);
-  const [successMessage, _setSuccessMessage] = useState('');
+  
 
   // Filter states
   const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'confirmed' | 'cancelled'>('all');
@@ -299,12 +299,7 @@ export default function ReservationsPage() {
         </div>
       )}
 
-      {successMessage && (
-        <div className="p-4 bg-green-900 border border-green-700 rounded-lg text-green-200 flex items-center gap-2">
-          <CheckCircle size={18} />
-          {successMessage}
-        </div>
-      )}
+      
 
       {/* Stats Dashboard */}
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
