@@ -9,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { VehicleImage } from '@/components/VehicleImage';
 import { toast } from 'sonner';
 // Navbar and Footer are provided by the root layout
-import { useSearchParams } from 'next/navigation';
 import { useState, useMemo, useEffect } from 'react';
 import {
   Filter,
@@ -55,7 +54,6 @@ interface Vehicle {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
 export default function VehiclesPage() {
-  const searchParams = useSearchParams();
   const [allVehicles, setAllVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
