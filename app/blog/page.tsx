@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { SearchIcon, Calendar, User, Tag } from 'lucide-react';
+import NextImage from 'next/image';
 
 interface BlogPost {
   _id: string;
@@ -144,10 +145,11 @@ export default function BlogPage() {
 
                     return (
                       <div className="relative h-48 bg-gray-200 overflow-hidden">
-                        <img
+                        <NextImage
                           src={displayImage}
                           alt={post.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition"
+                          fill
+                          className="object-cover group-hover:scale-105 transition"
                         />
                         <div className="absolute top-3 right-3">
                           <span className="bg-orange-600 text-white text-xs px-3 py-1 rounded-full capitalize">
