@@ -5,6 +5,7 @@ import { useRouter, useParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Upload, X } from 'lucide-react';
+import Image from 'next/image';
 import { toast } from 'sonner';
 
 interface VehicleForm {
@@ -98,6 +99,7 @@ export default function EditVehiclePage() {
         setCities(uniqueCities);
       }
     } catch (err) {
+      console.error(err);
       setError('Erreur lors du chargement des configurations');
     } finally {
       setConfigLoading(false);
@@ -130,6 +132,7 @@ export default function EditVehiclePage() {
         setError('Véhicule non trouvé');
       }
     } catch (err) {
+      console.error(err);
       setError('Erreur lors du chargement du véhicule');
     } finally {
       setLoading(false);
@@ -246,6 +249,7 @@ export default function EditVehiclePage() {
         setError(data.message || 'Erreur lors de la modification du véhicule');
       }
     } catch (err: any) {
+      console.error(err);
       setError(err.message);
     } finally {
       setSubmitLoading(false);
@@ -527,14 +531,14 @@ export default function EditVehiclePage() {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                 {form.mediaUrls.map((url) => (
                   <div key={url} className="relative group">
-                    <img
-                      src={url}
-                      alt="preview"
-                      className="w-full h-32 object-cover rounded-lg bg-gray-700"
-                      onError={(e) => {
-                        (e.currentTarget as HTMLImageElement).style.display = 'none';
-                      }}
-                    />
+                        <Image
+                          src={url}
+                          alt="preview"
+                          width={320}
+                          height={180}
+                          className="w-full h-32 object-cover rounded-lg bg-gray-700"
+                          onError={() => { /* ignore image errors in preview */ }}
+                        />
                     <button
                       type="button"
                       onClick={() => removeMedia(url)}

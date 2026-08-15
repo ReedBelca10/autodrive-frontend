@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Plus, Edit2, Trash2, Check, X } from 'lucide-react';
@@ -38,7 +37,7 @@ export default function VehiclesPage() {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const router = useRouter();
+  
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
   useEffect(() => {
@@ -55,6 +54,7 @@ export default function VehiclesPage() {
         setVehicles(Array.isArray(data) ? data : []);
       }
     } catch (err) {
+      console.error(err);
       setError('Erreur lors du chargement des véhicules');
     } finally {
       setLoading(false);
@@ -85,6 +85,7 @@ export default function VehiclesPage() {
         setError('Erreur lors de la suppression');
       }
     } catch (err) {
+      console.error(err);
       setError('Erreur lors de la suppression');
     }
   };
@@ -101,6 +102,7 @@ export default function VehiclesPage() {
         setVehicles(vehicles.map(v => v._id === id ? updatedVehicle : v));
       }
     } catch (err) {
+      console.error(err);
       setError('Erreur lors de la modification du statut');
     }
   };

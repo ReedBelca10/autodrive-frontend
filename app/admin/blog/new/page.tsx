@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
 import { ArrowLeft, Save, AlertCircle, FileUp, Film, Music, X } from 'lucide-react';
+import Image from 'next/image';
 
 export default function NewBlogPostPage() {
   const router = useRouter();
@@ -158,6 +159,7 @@ export default function NewBlogPostPage() {
           content: form.content,
           author: form.author,
           category: form.category,
+          tags,
           imageUrl: form.imageUrl,
           published: form.published,
           media: form.media,
@@ -300,7 +302,7 @@ export default function NewBlogPostPage() {
               {form.media.map((item, index) => (
                 <div key={index} className="relative group border rounded-lg overflow-hidden bg-gray-50 aspect-video flex items-center justify-center">
                   {item.type.startsWith('image/') ? (
-                    <img src={item.url} alt={item.name} className="w-full h-full object-cover" />
+                    <Image src={item.url} alt={item.name} fill className="object-cover" />
                   ) : item.type.startsWith('video/') ? (
                     <Film size={32} className="text-blue-500" />
                   ) : (
