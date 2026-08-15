@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Search, Calendar, Clock, Users, Fuel, Settings, MapPin, ImageOff, Filter, Car, Star, Tag, ChevronRight, X } from 'lucide-react';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+// read URL params on client via window.location
 import { VehicleImage } from '@/components/VehicleImage';
 
 interface Vehicle {
@@ -26,14 +26,12 @@ interface Vehicle {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
 export default function SearchVehiclesPage() {
-  const searchParams = useSearchParams();
-
-  // Read URL parameters
-  const urlStartDate = searchParams.get('startDate') || '';
-  const urlStartTime = searchParams.get('startTime') || '10:00';
-  const urlReturnDate = searchParams.get('returnDate') || '';
-  const urlReturnTime = searchParams.get('returnTime') || '10:00';
-  const urlLocation = searchParams.get('location') || '';
+  // Read URL parameters client-side
+  const urlStartDate = '';
+  const urlStartTime = '10:00';
+  const urlReturnDate = '';
+  const urlReturnTime = '10:00';
+  const urlLocation = '';
 
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [filteredVehicles, setFilteredVehicles] = useState<Vehicle[]>([]);
@@ -49,6 +47,21 @@ export default function SearchVehiclesPage() {
 
   // Fetch all available vehicles on page load
   useEffect(() => {
+    // Parse URL search params on client and initialize filters
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const sDate = params.get('startDate') || '';
+      const sTime = params.get('startTime') || '10:00';
+      const rDate = params.get('returnDate') || '';
+      const rTime = params.get('returnTime') || '10:00';
+      const loc = params.get('location') || '';
+      setStartDate(sDate);
+      setStartTime(sTime);
+      setReturnDate(rDate);
+      setReturnTime(rTime);
+      setSearchName(loc);
+      setSearched(!!sDate && !!rDate);
+    }
     const fetchVehicles = async () => {
       try {
         setLoading(true);
