@@ -1,15 +1,14 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useSearchParams, useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { Lock, Eye, EyeOff, CheckCircle, AlertCircle } from 'lucide-react';
 import Image from 'next/image';
 
 export default function ResetPasswordPage() {
-  const searchParams = useSearchParams();
   const router = useRouter();
-  const token = searchParams.get('token');
+  const [token, setToken] = useState<string | null>(null);
 
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -23,10 +22,15 @@ export default function ResetPasswordPage() {
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
   useEffect(() => {
-    if (!token) {
+    // Read token from URL on the client to avoid using `useSearchParams()` during prerender
+    const params = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : null;
+    const t = params?.get('token') || null;
+    setToken(t);
+
+    if (!t) {
       setError('Lien de réinitialisation invalide ou expiré');
     }
-  }, [token]);
+  }, []);
 
   const validatePasswords = () => {
     setValidationError('');
