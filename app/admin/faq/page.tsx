@@ -20,7 +20,6 @@ export default function FaqManagementPage() {
     const [faqs, setFaqs] = useState<Faq[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const router = useRouter();
     const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
     const fetchFaqs = async () => {
