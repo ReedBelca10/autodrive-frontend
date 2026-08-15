@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Upload, X } from 'lucide-react';
+import NextImage from 'next/image';
 
 interface VehicleForm {
   name: string;
@@ -88,6 +89,7 @@ export default function NewVehiclePage() {
         setCities(uniqueCities);
       }
     } catch (err) {
+      console.error(err);
       setError('Erreur lors du chargement des configurations');
     } finally {
       setConfigLoading(false);
@@ -136,6 +138,7 @@ export default function NewVehiclePage() {
 
       setForm({ ...form, mediaUrls: [...form.mediaUrls, ...newUrls] });
     } catch (err: any) {
+      console.error(err);
       setError(err.message || 'Erreur lors de l\'upload');
     } finally {
       setUploading(false);
@@ -177,6 +180,7 @@ export default function NewVehiclePage() {
         setError(data.message || 'Erreur lors de l\'ajout du véhicule');
       }
     } catch (err: any) {
+      console.error(err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -430,10 +434,11 @@ export default function NewVehiclePage() {
               <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                 {form.mediaUrls.map((url) => (
                   <div key={url} className="relative group">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
+                    <NextImage
                       src={url}
                       alt="preview"
+                      width={320}
+                      height={180}
                       className="w-full h-32 object-cover rounded-lg bg-gray-700"
                     />
                     <button

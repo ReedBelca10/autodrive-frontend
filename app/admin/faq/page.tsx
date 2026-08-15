@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import Link from 'next/link';
@@ -38,8 +37,9 @@ export default function FaqManagementPage() {
             const data = await response.json();
             setFaqs(data);
             setError('');
-        } catch (err) {
-            setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
+            } catch (err) {
+                console.error(err);
+                setError(err instanceof Error ? err.message : 'Erreur lors du chargement');
         } finally {
             setLoading(false);
         }
@@ -74,6 +74,7 @@ export default function FaqManagementPage() {
             setFaqs(faqs.filter(faq => faq._id !== id));
             toast.success('Question supprimée de la FAQ');
         } catch (err) {
+            console.error(err);
             toast.error(err instanceof Error ? err.message : 'Erreur lors de la suppression');
         }
     };
@@ -96,6 +97,7 @@ export default function FaqManagementPage() {
             ));
             toast.success(currentStatus ? 'Question masquée' : 'Question publiée');
         } catch (err) {
+            console.error(err);
             toast.error(err instanceof Error ? err.message : 'Erreur lors de la mise à jour');
         }
     };
