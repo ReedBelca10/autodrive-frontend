@@ -4,10 +4,6 @@ import LoginForm from './LoginForm';
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-const metadata = {
-  title: 'Connexion - AutoDrive',
-};
-
 export default function LoginPage() {
   const router = useRouter();
 
@@ -34,7 +30,7 @@ export default function LoginPage() {
         } else {
           router.push('/');
         }
-      } catch (err) {
+      } catch {
         // Ignore and stay on login page
         console.debug('User not authenticated yet');
       }

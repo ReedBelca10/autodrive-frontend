@@ -56,10 +56,14 @@ export default function LoginForm() {
       // Notify other tabs and same-window listeners
       try {
         localStorage.setItem('profile_updated_at', String(Date.now()));
-      } catch (e) {}
+      } catch {
+        // ignore localStorage errors
+      }
       try {
         window.dispatchEvent(new Event('autodrive:login'));
-      } catch (e) {}
+      } catch {
+        // ignore dispatch errors
+      }
 
       // Redirect based on user role
       if (userRole === 'admin') {
@@ -95,13 +99,13 @@ export default function LoginForm() {
           {/* Left - form area */}
           <div className="md:w-1/2 p-8 md:p-12 lg:p-16">
             <div className="flex flex-col items-start">
-                    <img
-                      src="/assets/logoSansBack.png"
-                      alt="AutoDrive Logo"
-                      width={128}
-                      height={128}
-                      className="object-contain w-32 h-32"
-                    />
+              <Image
+                src="/assets/logoSansBack.png"
+                alt="AutoDrive Logo"
+                width={128}
+                height={128}
+                className="object-contain w-32 h-32"
+              />
             </div>
 
             <h1 className="mt-6 text-4xl font-extrabold text-gray-900">Connexion</h1>
