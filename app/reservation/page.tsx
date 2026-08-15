@@ -4,7 +4,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
-import { useSearchParams } from 'next/navigation';
 import { useState, useEffect, useMemo } from 'react';
 import { ChevronRight, Calendar, MapPin, Clock, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
@@ -29,22 +28,21 @@ interface Vehicle {
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
 export default function ReservationPage() {
-  const searchParams = useSearchParams();
-  const vehicleIdParam = searchParams.get('vehicleId');
-  const paramStartDate = searchParams.get('startDate') || '';
-  const paramStartTime = searchParams.get('startTime') || '10:00';
-  const paramReturnDate = searchParams.get('returnDate') || '';
-  const paramReturnTime = searchParams.get('returnTime') || '10:00';
+  const [vehicleIdParam, setVehicleIdParam] = useState<string | null>(null);
+  const [paramStartDate, setParamStartDate] = useState('');
+  const [paramStartTime, setParamStartTime] = useState('10:00');
+  const [paramReturnDate, setParamReturnDate] = useState('');
+  const [paramReturnTime, setParamReturnTime] = useState('10:00');
 
   const [step, setStep] = useState(1);
   const [vehicle, setVehicle] = useState<Vehicle | null>(null);
   const [loadingVehicle, setLoadingVehicle] = useState(false);
 
   const [formData, setFormData] = useState({
-    startDate: paramStartDate,
-    startTime: paramStartTime,
-    returnDate: paramReturnDate,
-    returnTime: paramReturnTime,
+    startDate: '',
+    startTime: '10:00',
+    returnDate: '',
+    returnTime: '10:00',
     location: '',
     firstName: '',
     lastName: '',
@@ -80,6 +78,23 @@ export default function ReservationPage() {
       fetchVehicle();
     }
   }, [vehicleIdParam]);
+
+  // Read query params from URL on client
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const vid = params.get('vehicleId');
+    setVehicleIdParam(vid);
+    const sDate = params.get('startDate') || '';
+    const sTime = params.get('startTime') || '10:00';
+    const rDate = params.get('returnDate') || '';
+    const rTime = params.get('returnTime') || '10:00';
+    setParamStartDate(sDate);
+    setParamStartTime(sTime);
+    setParamReturnDate(rDate);
+    setParamReturnTime(rTime);
+    setFormData((prev) => ({ ...prev, startDate: sDate, startTime: sTime, returnDate: rDate, returnTime: rTime }));
+  }, []);
 
   // Calculate duration and price
   const calculation = useMemo(() => {
