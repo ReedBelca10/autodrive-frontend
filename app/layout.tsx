@@ -6,6 +6,10 @@ import { Toaster } from 'sonner';
 export const metadata = {
   title: 'AutoDrive',
   description: "Location de voitures et services AutoDrive",
+  icons: {
+    icon: '/assets/logoSansBack.png',
+    apple: '/assets/logoSansBack.png',
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
