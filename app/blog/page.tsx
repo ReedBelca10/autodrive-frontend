@@ -26,7 +26,7 @@ export default function BlogPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001/api';
+  const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
   const categories = ['actualités', 'conseils', 'guides', 'tutoriels'];
 

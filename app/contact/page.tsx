@@ -12,7 +12,7 @@ export default function ContactPage() {
   const [error, setError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000';
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
   const validateEmail = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

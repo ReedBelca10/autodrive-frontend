@@ -16,7 +16,7 @@ export default function HistoryClient() {
   const [rentals, setRentals] = useState<Rental[] | null>(null)
   const [error, setError] = useState<string | null>(null)
 
-  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3000'
+  const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001'
 
   useEffect(() => {
     let mounted = true
