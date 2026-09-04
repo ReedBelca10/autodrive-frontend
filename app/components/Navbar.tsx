@@ -25,21 +25,13 @@ export default function Navbar() {
 
   const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
 
-  // Handle logo click based on user role
-  const handleLogoClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
+  // Handle logo route based on user role
+  const getHomeRoute = () => {
     if (user) {
-      const userRole = user.role;
-      if (userRole === 'admin') {
-        router.push('/admin');
-      } else if (userRole === 'manager') {
-        router.push('/manager');
-      } else {
-        router.push('/');
-      }
-    } else {
-      router.push('/');
+      if (user.role === 'admin') return '/admin';
+      if (user.role === 'manager') return '/manager';
     }
+    return '/';
   };
 
   const displayName = user?.fullName || (user?.email ? user.email.split('@')[0] : null) || 'Utilisateur';
@@ -105,7 +97,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center py-1 md:py-2 lg:py-3">
           {/* Logo */}
-          <Link href="/" onClick={handleLogoClick} className="relative z-50 flex items-center gap-3 flex-shrink-0 bg-transparent">
+          <Link href={getHomeRoute()} className="relative z-50 flex items-center gap-3 flex-shrink-0 bg-transparent">
             <Image
               src="/assets/logoSansBack.png"
               alt="AutoDrive Logo"
@@ -143,7 +135,7 @@ export default function Navbar() {
                   >
                     <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden bg-slate-200 flex items-center justify-center ring-2 ring-gray-100">
                       {user.avatarUrl ? (
-                        <Image src={user.avatarUrl} alt="avatar" width={36} height={36} className="w-full h-full object-cover" />
+                        <Image src={user.avatarUrl} alt="avatar" width={36} height={36} unoptimized={true} className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-xs sm:text-sm font-medium text-slate-700">{initials}</span>
                       )}
