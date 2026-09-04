@@ -51,7 +51,7 @@ export default function LoginForm() {
       }
 
       const profileData = await profileRes.json();
-      const userRole = profileData.user?.role;
+      const userRole = profileData.role || profileData.user?.role;
 
       // Notify other tabs and same-window listeners
       try {
@@ -65,13 +65,14 @@ export default function LoginForm() {
         // ignore dispatch errors
       }
 
-      // Redirect based on user role
+      // Redirect based on user role — use window.location for a full reload
+      // so that the Navbar and all components pick up the fresh auth cookies
       if (userRole === 'admin') {
-        router.push('/admin');
+        window.location.href = '/admin';
       } else if (userRole === 'manager') {
-        router.push('/manager');
+        window.location.href = '/manager';
       } else {
-        router.push('/');
+        window.location.href = '/';
       }
     } catch (err: any) {
       const errMsg = err.message || 'Erreur réseau';
