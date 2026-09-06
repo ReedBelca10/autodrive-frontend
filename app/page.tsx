@@ -395,9 +395,8 @@ export default function Home() {
           <div className="text-center mb-16">
             <p className="text-blue-600 text-sm font-bold uppercase mb-3 tracking-wide">Comment louer une voiture?</p>
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-2">
-              Louez avec les trois étapes
+              Louez avec les trois étapes suivantes
             </h2>
-            <p className="text-gray-600 text-lg">suivantes</p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
