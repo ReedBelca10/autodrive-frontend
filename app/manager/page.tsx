@@ -59,6 +59,12 @@ export default function ManagerDashboard() {
       const vehiclesRes = await fetch(`${API_BASE}/vehicles/manager/my-vehicles`, {
         credentials: 'include',
       });
+
+      if (vehiclesRes.status === 401 || vehiclesRes.status === 403) {
+        window.location.href = '/login';
+        return;
+      }
+
       if (vehiclesRes.ok) {
         const vData = await vehiclesRes.json();
         setVehicles(Array.isArray(vData) ? vData : []);

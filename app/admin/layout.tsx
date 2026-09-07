@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { LayoutDashboard, Car, Users, MessageSquare, Bookmark, LogOut, Menu, X, MapPin, BookOpen, HelpCircle, Mail } from 'lucide-react';
@@ -12,6 +12,26 @@ export default function AdminLayout({
 }) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const base = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
+      try {
+        const res = await fetch(`${base}/auth/profile`, { credentials: 'include' });
+        if (res.status === 401 || res.status === 403) {
+          window.location.href = '/login';
+        } else if (res.ok) {
+          const data = await res.json();
+          if (data.user?.role !== 'admin') {
+            window.location.href = '/';
+          }
+        }
+      } catch (err) {
+        // If network error, might want to redirect to login or just ignore
+      }
+    };
+    checkAuth();
+  }, []);
 
   const handleLogout = async () => {
     const base = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:3001';
