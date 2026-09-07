@@ -66,7 +66,7 @@ export default function ProfileClient() {
     } catch (e) {
       // ignore
     }
-    router.push('/login')
+    window.location.href = '/login';
   }
 
   async function handleRefresh() {

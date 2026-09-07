@@ -23,7 +23,7 @@ export default function AdminLayout({
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
-      router.push('/login');
+      window.location.href = '/login';
     }
   };
 

@@ -159,7 +159,7 @@ export default function Navbar() {
                         } catch (e) {}
                         setUser(null);
                         setMenuOpen(false);
-                        router.push('/login');
+                        window.location.href = '/login';
                       }}
                     >
                       Se déconnecter
@@ -233,7 +233,7 @@ export default function Navbar() {
                       try { await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' }); } catch (e) {}
                       setUser(null);
                       setIsOpen(false);
-                      router.push('/login');
+                      window.location.href = '/login';
                     }}
                   >
                     Déconnexion

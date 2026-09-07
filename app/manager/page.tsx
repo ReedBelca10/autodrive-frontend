@@ -170,7 +170,7 @@ export default function ManagerDashboard() {
     } catch (err) {
       console.error('Logout error:', err);
     } finally {
-      router.push('/login');
+      window.location.href = '/login';
     }
   };
 
