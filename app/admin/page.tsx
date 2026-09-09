@@ -17,7 +17,7 @@ import {
   Legend,
   ResponsiveContainer,
 } from 'recharts';
-import { TrendingUp, Users, Car, CreditCard } from 'lucide-react';
+import { TrendingUp, Users, Car, CreditCard, AlertCircle } from 'lucide-react';
 
 interface Reservation {
   _id: string;
