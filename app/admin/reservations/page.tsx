@@ -349,25 +349,25 @@ export default function ReservationsPage() {
 
       {/* Stats Dashboard */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <Card className="bg-gray-800 border-gray-700 p-4 overflow-hidden min-w-0">
+        <Card className="bg-gray-800 border-gray-700 p-4 overflow-hidden min-w-0 flex flex-col justify-center">
           <p className="text-gray-400 text-sm mb-1 truncate">Total</p>
-          <p className="text-2xl lg:text-3xl font-bold truncate">{stats.total}</p>
+          <p className="text-xl xl:text-2xl font-bold break-words">{stats.total}</p>
         </Card>
-        <Card className="bg-gray-800 border-gray-700 p-4 overflow-hidden min-w-0">
+        <Card className="bg-gray-800 border-gray-700 p-4 overflow-hidden min-w-0 flex flex-col justify-center">
           <p className="text-yellow-400 text-sm mb-1 truncate">En attente</p>
-          <p className="text-2xl lg:text-3xl font-bold text-yellow-400 truncate">{stats.pending}</p>
+          <p className="text-xl xl:text-2xl font-bold text-yellow-400 break-words">{stats.pending}</p>
         </Card>
-        <Card className="bg-gray-800 border-gray-700 p-4 overflow-hidden min-w-0">
+        <Card className="bg-gray-800 border-gray-700 p-4 overflow-hidden min-w-0 flex flex-col justify-center">
           <p className="text-green-400 text-sm mb-1 truncate">Confirmées</p>
-          <p className="text-2xl lg:text-3xl font-bold text-green-400 truncate">{stats.confirmed}</p>
+          <p className="text-xl xl:text-2xl font-bold text-green-400 break-words">{stats.confirmed}</p>
         </Card>
-        <Card className="bg-gray-800 border-gray-700 p-4 overflow-hidden min-w-0">
+        <Card className="bg-gray-800 border-gray-700 p-4 overflow-hidden min-w-0 flex flex-col justify-center">
           <p className="text-red-400 text-sm mb-1 truncate">Annulées</p>
-          <p className="text-2xl lg:text-3xl font-bold text-red-400 truncate">{stats.cancelled}</p>
+          <p className="text-xl xl:text-2xl font-bold text-red-400 break-words">{stats.cancelled}</p>
         </Card>
-        <Card className="bg-gray-800 border-gray-700 p-4 overflow-hidden min-w-0">
+        <Card className="bg-gray-800 border-gray-700 p-4 overflow-hidden min-w-0 flex flex-col justify-center">
           <p className="text-blue-400 text-sm mb-1 truncate">Revenu</p>
-          <p className="text-2xl lg:text-3xl font-bold text-blue-400 truncate">{formatCurrency(stats.revenue)}</p>
+          <p className="text-xl xl:text-2xl font-bold text-blue-400 break-words">{formatCurrency(stats.revenue)}</p>
         </Card>
       </div>
 

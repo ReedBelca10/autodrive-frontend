@@ -214,7 +214,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between gap-3 relative z-10">
             <div className="min-w-0 flex-1">
               <p className="text-slate-500 text-xs sm:text-sm font-semibold mb-2 tracking-wide uppercase truncate">TOTAL RÉSERVATIONS</p>
-              <p className="text-2xl sm:text-4xl font-bold text-slate-800 truncate">{stats.totalReservations}</p>
+              <p className="text-xl sm:text-3xl font-bold text-slate-800 break-words">{stats.totalReservations}</p>
             </div>
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 shadow-inner group-hover:bg-blue-500 group-hover:text-white transition-colors duration-300 shrink-0">
               <Car size={24} />
@@ -227,7 +227,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between gap-3 relative z-10">
             <div className="min-w-0 flex-1">
               <p className="text-slate-500 text-xs sm:text-sm font-semibold mb-2 tracking-wide uppercase truncate">CONFIRMÉES</p>
-              <p className="text-2xl sm:text-4xl font-bold text-slate-800 truncate">{stats.confirmedCount}</p>
+              <p className="text-xl sm:text-3xl font-bold text-slate-800 break-words">{stats.confirmedCount}</p>
             </div>
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-green-50 flex items-center justify-center text-green-500 shadow-inner group-hover:bg-green-500 group-hover:text-white transition-colors duration-300 shrink-0">
               <TrendingUp size={24} />
@@ -240,7 +240,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between gap-3 relative z-10">
             <div className="min-w-0 flex-1">
               <p className="text-slate-500 text-xs sm:text-sm font-semibold mb-2 tracking-wide uppercase truncate">REVENU TOTAL</p>
-              <p className="text-lg sm:text-2xl font-bold text-slate-800 truncate">{formatCurrency(stats.totalRevenue)}</p>
+              <p className="text-lg sm:text-xl xl:text-2xl font-bold text-slate-800 break-words">{formatCurrency(stats.totalRevenue)}</p>
             </div>
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-500 shadow-inner group-hover:bg-purple-500 group-hover:text-white transition-colors duration-300 shrink-0">
               <CreditCard size={24} />
@@ -253,7 +253,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between gap-3 relative z-10">
             <div className="min-w-0 flex-1">
               <p className="text-slate-500 text-xs sm:text-sm font-semibold mb-2 tracking-wide uppercase truncate">EN ATTENTE</p>
-              <p className="text-2xl sm:text-4xl font-bold text-slate-800 truncate">{stats.pendingCount}</p>
+              <p className="text-xl sm:text-3xl font-bold text-slate-800 break-words">{stats.pendingCount}</p>
             </div>
             <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-500 shadow-inner group-hover:bg-amber-500 group-hover:text-white transition-colors duration-300 shrink-0">
               <Users size={24} />
