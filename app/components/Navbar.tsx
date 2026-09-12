@@ -93,35 +93,36 @@ export default function Navbar() {
   if (pathname && (pathname.startsWith('/login') || pathname.startsWith('/register'))) return null;
 
   return (
-    <nav className="sticky top-0 z-50 bg-white border-b border-gray-200 shadow-sm overflow-visible">
+    <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-lg border-b border-gray-200/50 shadow-sm overflow-visible transition-all">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center py-1 md:py-2 lg:py-3">
+        <div className="flex justify-between items-center py-2 sm:py-3 lg:py-4">
           {/* Logo */}
-          <Link href={getHomeRoute()} className="relative z-50 flex items-center gap-3 flex-shrink-0 bg-transparent">
+          <Link href={getHomeRoute()} className="relative z-50 flex items-center flex-shrink-0 transition-transform hover:scale-105">
             <Image
               src="/assets/logoSansBack.png"
               alt="AutoDrive Logo"
-              width={400}
-              height={400}
-              className="bg-transparent h-10 sm:h-12 md:h-14 lg:h-16 xl:h-18 w-auto object-contain sm:scale-110 md:scale-125 lg:scale-150"
+              width={200}
+              height={60}
+              className="h-8 sm:h-10 md:h-12 w-auto object-contain"
+              priority
             />
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center gap-8">
-            <Link href="/" className="text-gray-700 hover:text-blue-600 font-medium">ACCUEIL</Link>
-            <Link href="/vehicles" className="text-gray-700 hover:text-blue-600 font-medium">VÉHICULES</Link>
-            <Link href="/promotions" className="text-gray-700 hover:text-blue-600 font-medium">PROMOTIONS</Link>
-            <Link href="/blog" className="text-gray-700 hover:text-blue-600 font-medium">BLOG</Link>
-            <Link href="/about" className="text-gray-700 hover:text-blue-600 font-medium">À PROPOS</Link>
-            <Link href="/contact" className="text-gray-700 hover:text-blue-600 font-medium">CONTACT</Link>
+          <div className="hidden lg:flex items-center gap-1 xl:gap-3">
+            <Link href="/" className="px-3 py-2 rounded-full text-slate-600 hover:text-blue-600 hover:bg-blue-50 text-sm font-bold transition-all">ACCUEIL</Link>
+            <Link href="/vehicles" className="px-3 py-2 rounded-full text-slate-600 hover:text-blue-600 hover:bg-blue-50 text-sm font-bold transition-all">VÉHICULES</Link>
+            <Link href="/promotions" className="px-3 py-2 rounded-full text-slate-600 hover:text-blue-600 hover:bg-blue-50 text-sm font-bold transition-all">PROMOTIONS</Link>
+            <Link href="/blog" className="px-3 py-2 rounded-full text-slate-600 hover:text-blue-600 hover:bg-blue-50 text-sm font-bold transition-all">BLOG</Link>
+            <Link href="/about" className="px-3 py-2 rounded-full text-slate-600 hover:text-blue-600 hover:bg-blue-50 text-sm font-bold transition-all">À PROPOS</Link>
+            <Link href="/contact" className="px-3 py-2 rounded-full text-slate-600 hover:text-blue-600 hover:bg-blue-50 text-sm font-bold transition-all">CONTACT</Link>
           </div>
 
           {/* Buttons Area */}
-          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
-            <div className="hidden md:block">
+          <div className="flex items-center gap-3 sm:gap-5 flex-shrink-0">
+            <div className="hidden lg:block">
               <Link href="/vehicles/search">
-                <Button className="bg-blue-600 hover:bg-blue-700 text-white">RÉSERVER</Button>
+                <Button className="bg-blue-600 hover:bg-blue-700 text-white rounded-full px-6 shadow-md shadow-blue-200 transition-all hover:shadow-lg hover:-translate-y-0.5 font-bold">RÉSERVER</Button>
               </Link>
             </div>
 
@@ -170,20 +171,20 @@ export default function Navbar() {
             ) : (
               <div className="flex items-center gap-2">
                 <Link href="/login" className="hidden sm:block">
-                  <Button variant="ghost" className="text-gray-700 hover:text-blue-600">Connexion</Button>
+                  <Button variant="ghost" className="text-slate-700 hover:text-blue-600 font-bold rounded-full">Connexion</Button>
                 </Link>
                 <Link href="/register">
-                  <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50 hidden sm:flex">Inscription</Button>
+                  <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50 hidden sm:flex rounded-full font-bold">Inscription</Button>
                 </Link>
                 <Link href="/login" className="sm:hidden">
-                  <Button size="sm" className="bg-blue-600 text-white">Connexion</Button>
+                  <Button size="sm" className="bg-blue-600 text-white rounded-full font-bold">Connexion</Button>
                 </Link>
               </div>
             )}
 
             {/* Mobile Menu Toggle */}
             <button
-              className="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 transition-colors"
+              className="lg:hidden p-2 -mr-2 rounded-full text-slate-600 hover:bg-slate-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500/50"
               onClick={() => setIsOpen(!isOpen)}
               aria-label="Toggle menu"
             >
@@ -193,42 +194,42 @@ export default function Navbar() {
         </div>
 
         {/* Mobile Menu */}
-        {isOpen && (
-          <div className="md:hidden border-t border-gray-100 py-4 pb-6 space-y-4 animate-in slide-in-from-top-1">
+        <div className={`lg:hidden overflow-hidden transition-all duration-300 ease-in-out ${isOpen ? 'max-h-[85vh] opacity-100' : 'max-h-0 opacity-0'}`}>
+          <div className="border-t border-slate-100 py-4 pb-6 space-y-4 overflow-y-auto">
             <div className="space-y-1 px-2">
-              <Link href="/" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl" onClick={() => setIsOpen(false)}>ACCUEIL</Link>
-              <Link href="/vehicles" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl" onClick={() => setIsOpen(false)}>VÉHICULES</Link>
-              <Link href="/favorites" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl" onClick={() => setIsOpen(false)}>MES FAVORIS</Link>
-              <Link href="/promotions" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl" onClick={() => setIsOpen(false)}>PROMOTIONS</Link>
-              <Link href="/blog" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl" onClick={() => setIsOpen(false)}>BLOG</Link>
-              <Link href="/about" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl" onClick={() => setIsOpen(false)}>À PROPOS</Link>
-              <Link href="/contact" className="block px-4 py-3 text-base font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-700 rounded-xl" onClick={() => setIsOpen(false)}>CONTACT</Link>
+              <Link href="/" className="block px-4 py-3 text-base font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 rounded-2xl transition-colors" onClick={() => setIsOpen(false)}>ACCUEIL</Link>
+              <Link href="/vehicles" className="block px-4 py-3 text-base font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 rounded-2xl transition-colors" onClick={() => setIsOpen(false)}>VÉHICULES</Link>
+              <Link href="/favorites" className="block px-4 py-3 text-base font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 rounded-2xl transition-colors" onClick={() => setIsOpen(false)}>MES FAVORIS</Link>
+              <Link href="/promotions" className="block px-4 py-3 text-base font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 rounded-2xl transition-colors" onClick={() => setIsOpen(false)}>PROMOTIONS</Link>
+              <Link href="/blog" className="block px-4 py-3 text-base font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 rounded-2xl transition-colors" onClick={() => setIsOpen(false)}>BLOG</Link>
+              <Link href="/about" className="block px-4 py-3 text-base font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 rounded-2xl transition-colors" onClick={() => setIsOpen(false)}>À PROPOS</Link>
+              <Link href="/contact" className="block px-4 py-3 text-base font-bold text-slate-700 hover:bg-blue-50 hover:text-blue-700 rounded-2xl transition-colors" onClick={() => setIsOpen(false)}>CONTACT</Link>
             </div>
             
             <div className="px-4 pt-2">
               <Link href="/vehicles/search" onClick={() => setIsOpen(false)}>
-                <Button className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white text-base font-semibold shadow-lg shadow-blue-200">RÉSERVER MAINTENANT</Button>
+                <Button className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white text-base font-bold rounded-xl shadow-lg shadow-blue-200/50 transition-all">RÉSERVER MAINTENANT</Button>
               </Link>
             </div>
 
             {user ? (
-               <div className="px-4 pt-4 border-t border-gray-100 mx-2">
-                <div className="flex items-center justify-between px-2 mb-4">
+               <div className="px-4 pt-4 border-t border-slate-100 mx-2 mt-4">
+                <div className="flex items-center justify-between px-2 mb-4 bg-slate-50 p-3 rounded-2xl">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden">
-                      {user.avatarUrl ? <Image src={user.avatarUrl} alt="avatar" width={40} height={40} /> : <span className="font-bold text-slate-700">{initials}</span>}
+                    <div className="w-12 h-12 rounded-full bg-slate-200 flex items-center justify-center overflow-hidden ring-2 ring-white shadow-sm">
+                      {user.avatarUrl ? <Image src={user.avatarUrl} alt="avatar" width={48} height={48} className="object-cover w-full h-full" /> : <span className="font-bold text-slate-700 text-lg">{initials}</span>}
                     </div>
-                    <div>
-                      <p className="text-sm font-bold text-gray-900 truncate max-w-[150px]">{displayName}</p>
-                      <p className="text-xs text-gray-500 truncate max-w-[150px]">{user.email}</p>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-slate-900 truncate">{displayName}</p>
+                      <p className="text-xs text-slate-500 truncate">{user.email}</p>
                     </div>
                   </div>
                   <NotificationBell />
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <Link href="/profile" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-2 p-3 bg-gray-50 text-gray-700 rounded-xl text-sm font-medium">Profil</Link>
+                <div className="grid grid-cols-2 gap-3">
+                  <Link href="/profile" onClick={() => setIsOpen(false)} className="flex items-center justify-center gap-2 p-3 bg-slate-50 hover:bg-slate-100 text-slate-700 rounded-xl text-sm font-bold transition-colors">Profil</Link>
                   <button
-                    className="flex items-center justify-center gap-2 p-3 bg-red-50 text-red-600 rounded-xl text-sm font-medium"
+                    className="flex items-center justify-center gap-2 p-3 bg-red-50 hover:bg-red-100 text-red-600 rounded-xl text-sm font-bold transition-colors"
                     onClick={async () => {
                       try { await fetch(`${API_BASE}/auth/logout`, { method: 'POST', credentials: 'include' }); } catch (e) {}
                       setUser(null);
@@ -241,17 +242,17 @@ export default function Navbar() {
                 </div>
               </div>
             ) : (
-              <div className="px-4 grid grid-cols-2 gap-3 pt-2">
+              <div className="px-4 grid grid-cols-2 gap-3 pt-4 border-t border-slate-100 mt-2 mx-2">
                 <Link href="/login" onClick={() => setIsOpen(false)}>
-                  <Button variant="outline" className="w-full h-11 rounded-xl">Connexion</Button>
+                  <Button variant="outline" className="w-full h-11 rounded-xl font-bold border-slate-300 text-slate-700">Connexion</Button>
                 </Link>
                 <Link href="/register" onClick={() => setIsOpen(false)}>
-                  <Button className="w-full h-11 rounded-xl bg-gray-900 hover:bg-black text-white">S’inscrire</Button>
+                  <Button className="w-full h-11 rounded-xl bg-slate-900 hover:bg-black text-white font-bold">S’inscrire</Button>
                 </Link>
               </div>
             )}
           </div>
-        )}
+        </div>
       </div>
     </nav>
   );
