@@ -9,8 +9,11 @@ import {
   FileText,
   AlertCircle,
   Check,
+  Download,
 } from 'lucide-react';
 import { toast } from 'sonner';
+import jsPDF from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface Reservation {
   _id: string;
@@ -219,6 +222,40 @@ export default function ReservationsPage() {
     a.click();
   };
 
+  const exportToPDF = () => {
+    const doc = new jsPDF('landscape');
+    
+    doc.setFontSize(18);
+    doc.text('Liste des Réservations', 14, 22);
+    
+    const headers = [
+      ['ID', 'Utilisateur', 'Véhicule', 'Pickup', 'Début', 'Fin', 'Statut', 'Paiement', 'Montant']
+    ];
+    
+    const data = filteredReservations.map(r => [
+      r._id.substring(0, 8) + '...',
+      r.userName || 'N/A',
+      r.vehicleName || 'N/A',
+      r.pickupLocation || 'N/A',
+      new Date(r.startDate).toLocaleDateString('fr-FR'),
+      new Date(r.returnDate).toLocaleDateString('fr-FR'),
+      getStatusLabel(r.status),
+      r.paymentStatus || 'N/A',
+      formatCurrency(r.totalPrice)
+    ]);
+
+    autoTable(doc, {
+      head: headers,
+      body: data,
+      startY: 30,
+      theme: 'grid',
+      styles: { fontSize: 8 },
+      headStyles: { fillColor: [30, 58, 138] }
+    });
+
+    doc.save(`reservations-${new Date().toISOString().split('T')[0]}.pdf`);
+  };
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'confirmed':
@@ -282,13 +319,22 @@ export default function ReservationsPage() {
       {/* Header */}
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Gestion des Réservations</h1>
-        <button
-          onClick={exportToCSV}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
-        >
-          <FileText size={18} />
-          Exporter CSV
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={exportToCSV}
+            className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors border border-slate-600 shadow-sm text-sm"
+          >
+            <FileText size={18} />
+            <span className="hidden sm:inline">CSV</span>
+          </button>
+          <button
+            onClick={exportToPDF}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors shadow-sm text-sm"
+          >
+            <Download size={18} />
+            <span className="hidden sm:inline">PDF</span>
+          </button>
+        </div>
       </div>
 
       {/* Messages */}
